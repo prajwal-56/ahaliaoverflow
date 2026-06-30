@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0c29"/>
+      <stop offset="100%" style="stop-color:#302b63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="850" fill="url(#bg)"/>
+  <rect x="30" y="30" width="1140" height="790" fill="none" stroke="#a78bfa" stroke-width="2" rx="12"/>
+  <rect x="40" y="40" width="1120" height="770" fill="none" stroke="#7c3aed" stroke-width="1" rx="10"/>
+  <text x="600" y="120" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#a78bfa" letter-spacing="6">TECHCLUB</text>
+  <text x="600" y="220" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#ffffff" font-weight="bold">Certificate of Participation</text>
+  <text x="600" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#c4b5fd">This is to certify that</text>
+  <text x="600" y="400" text-anchor="middle" font-family="Georgia, serif" font-size="56" fill="#f5d0a9" font-weight="bold">{{NAME}}</text>
+  <line x1="250" y1="420" x2="950" y2="420" stroke="#a78bfa" stroke-width="1"/>
+  <text x="600" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#c4b5fd">successfully participated in</text>
+  <text x="600" y="540" text-anchor="middle" font-family="Georgia, serif" font-size="38" fill="#ffffff" font-weight="bold">{{EVENT}}</text>
+  <text x="600" y="600" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#9ca3af">held on {{DATE}}</text>
+  <line x1="200" y1="730" x2="450" y2="730" stroke="#6d28d9" stroke-width="1"/>
+  <text x="325" y="755" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">Event Organizer</text>
+  <line x1="750" y1="730" x2="1000" y2="730" stroke="#6d28d9" stroke-width="1"/>
+  <text x="875" y="755" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">Club Lead</text>
+</svg>
