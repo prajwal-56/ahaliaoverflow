@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+venv/
+.venv/
+env/
+ENV/
+
+# Next.js build outputs and caches
+.next/
+out/
+.docusaurus/
+.turbo/
+
+# Python cache and build outputs
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Environment variables and secrets (NEVER commit these)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated static assets for the app (keep folders but ignore contents)
+backend/static/qr/*
+!backend/static/qr/.gitkeep
+backend/static/certificates/*
+!backend/static/certificates/.gitkeep

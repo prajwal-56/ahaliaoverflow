@@ -48,7 +48,7 @@ export default function HomePage() {
             Your College Tech Community
           </div>
           <h1 className="font-serif text-6xl md:text-8xl font-bold text-white mb-6 leading-tight">
-            Tech<span className="text-indigo-400">Club</span>
+            Coding Club <span className="text-indigo-400">Ahalia</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
             Where curious minds <span className="text-indigo-400">build</span>,{' '}
@@ -78,12 +78,12 @@ export default function HomePage() {
               <div className="text-indigo-400 text-sm font-medium uppercase tracking-widest mb-4">About Us</div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Who We Are</h2>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                TechClub is Ahalia School of Engineering and Technology&apos;s home for everything technical.
+                Coding Club Ahalia is Ahalia School of Engineering and Technology&apos;s home for everything technical.
                 We run hackathons, workshops, coding contests, and talk sessions — all free, all open to
                 any student who&apos;s curious enough to show up.
               </p>
               <p className="text-gray-400 leading-relaxed">
-                Whether you&apos;re just starting out or already building projects, TechClub is where you
+                Whether you&apos;re just starting out or already building projects, Coding Club Ahalia is where you
                 find your people, sharpen your skills, and make something worth showing.
               </p>
               <div className="flex gap-4 mt-8">
