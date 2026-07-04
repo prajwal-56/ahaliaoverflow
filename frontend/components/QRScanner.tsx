@@ -7,32 +7,92 @@ export default function QRScanner() {
   const scannerRef = useRef<Html5Qrcode | null>(null)
   const [result, setResult] = useState<{ status: string; message: string } | null>(null)
   const [scanning, setScanning] = useState(false)
+  const scanningRef = useRef(false)
   const [started, setStarted] = useState(false)
 
   useEffect(() => {
-    const scanner = new Html5Qrcode('qr-reader')
-    scannerRef.current = scanner
-    scanner
-      .start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        async (decodedText) => {
-          if (scanning) return
-          scanner.pause()
-          setScanning(true)
-          try {
-            const res = await checkInByToken(decodedText)
-            setResult(res)
-          } catch (e) {
-            setResult({ status: 'error', message: 'Failed to check in' })
-          }
-          setTimeout(() => { setScanning(false); try { scanner.resume() } catch (_) {} }, 3000)
-        },
-        undefined
-      )
-      .then(() => setStarted(true))
-      .catch((err) => { setResult({ status: 'error', message: `Camera error: ${err}` }) })
-    return () => { scanner.stop().catch(() => {}) }
+    let isMounted = true
+    let scanner: Html5Qrcode | null = null
+
+    // Delay initialization slightly to prevent React 18 Strict Mode double-mount collision
+    const timer = setTimeout(() => {
+      if (!isMounted) return
+
+      try {
+        scanner = new Html5Qrcode('qr-reader')
+        scannerRef.current = scanner
+
+        scanner
+          .start(
+            { facingMode: 'environment' },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            async (decodedText) => {
+              if (!isMounted || scanningRef.current) return
+              scanningRef.current = true
+              setScanning(true)
+
+              // Pause scanning using the scanner reference directly
+              try {
+                if (scanner?.isScanning) {
+                  scanner.pause(true)
+                }
+              } catch (e) {
+                console.error('Failed to pause scanner:', e)
+              }
+
+              try {
+                const res = await checkInByToken(decodedText)
+                if (isMounted) setResult(res)
+              } catch (e) {
+                if (isMounted) setResult({ status: 'error', message: 'Failed to check in' })
+              }
+
+              // Resume scanning after 3 seconds
+              setTimeout(() => {
+                if (isMounted) {
+                  scanningRef.current = false
+                  setScanning(false)
+                  try {
+                    if (scanner?.isScanning) {
+                      scanner.resume()
+                    }
+                  } catch (e) {
+                    console.error('Failed to resume scanner:', e)
+                  }
+                }
+              }, 3000)
+            },
+            () => {} // Silent verbosity callback
+          )
+          .then(() => {
+            if (isMounted) {
+              setStarted(true)
+            } else {
+              // Component unmounted while starting, stop it immediately
+              if (scanner?.isScanning) {
+                scanner.stop().catch(err => console.error('Cleanup stop error:', err))
+              }
+            }
+          })
+          .catch((err) => {
+            if (isMounted) {
+              setResult({ status: 'error', message: `Camera error: ${err}` })
+            }
+          })
+      } catch (err) {
+        console.error('Scanner creation error:', err)
+      }
+    }, 150)
+
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+      if (scanner) {
+        if (scanner.isScanning) {
+          scanner.stop().catch((err) => console.error('Unmount stop error:', err))
+        }
+      }
+    }
   }, [])
 
   const statusColor = result?.status === 'success' ? 'bg-green-600' : result?.status === 'already_checked_in' ? 'bg-yellow-500' : 'bg-red-600'
