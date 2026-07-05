@@ -198,7 +198,7 @@ export default function EventDetailPage() {
           <div className="mb-8">
             {event.seats_left !== undefined && event.seats_left <= 0 ? (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 font-semibold px-6 py-4 rounded-lg inline-block text-lg">
-                🚫 Event is Fully Booked
+                🚫 Event is Fully Booked. Try contacting the organizer irl or reach out to us (Email/Whatsapp)
               </div>
             ) : user ? (
               <button
@@ -231,14 +231,14 @@ export default function EventDetailPage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl" />
           <h2 className="text-xl font-bold text-white mb-2">Need Help or Facing Difficulties?</h2>
           <p className="text-gray-400 text-sm max-w-lg mx-auto mb-6">
-            If you are confused about how the website works, didn't receive your QR ticket, or have queries about this event, feel free to contact us.
+            If you are confused about how the website works, didn&apos;t receive your QR ticket, facing any difficulties/bugs, have queries about this event Or if you just wanna say Hi, feel free to contact us.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="mailto:support@ahaliaoverflow.in" className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-gray-700">
-              ✉️ Email Support
+            <a href="mailto:prawmathean@proton.me" className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-gray-700">
+              ✉️ Email 
             </a>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="bg-green-600/10 hover:bg-green-600/20 text-green-400 border border-green-500/20 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
-              💬 WhatsApp Query
+            <a href="https://wa.me/+917736221227?text=Hey%20%21%20I%20just%20wanted%20to%20ask%20you%20something%20about%20ahalia%20overflow.%0A" target="_blank" rel="noopener noreferrer" className="bg-green-600/10 hover:bg-green-600/20 text-green-400 border border-green-500/20 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+              💬 WhatsApp 
             </a>
           </div>
         </div>

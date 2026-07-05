@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getEvents } from '@/lib/api'
 import EventCard from '@/components/EventCard'
+import { supabase } from '@/lib/supabase'
 
 interface Event {
   id: string
@@ -20,10 +21,12 @@ interface Event {
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
   const [completedEvents, setCompletedEvents] = useState<Event[]>([])
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
     getEvents('upcoming').then((data) => setUpcomingEvents(Array.isArray(data) ? data.slice(0, 3) : []))
     getEvents('completed').then((data) => setCompletedEvents(Array.isArray(data) ? data.slice(0, 3) : []))
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
   }, [])
 
   return (
@@ -58,9 +61,15 @@ export default function HomePage() {
             <Link href="/events" className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
               Explore Events
             </Link>
-            <Link href="/auth/signup" className="border border-indigo-500/50 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:bg-indigo-500/10">
-              Join the Overflow
-            </Link>
+            {user ? (
+              <Link href="/dashboard" className="border border-indigo-500/50 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:bg-indigo-500/10">
+                Go to Dashboard
+              </Link>
+            ) : (
+              <Link href="/auth/signup" className="border border-indigo-500/50 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:bg-indigo-500/10">
+                Join the Overflow
+              </Link>
+            )}
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500">
@@ -77,10 +86,10 @@ export default function HomePage() {
               <div className="text-indigo-400 text-sm font-medium uppercase tracking-widest mb-4">About Us</div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Who We Are</h2>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                Ahalia Overflow isn&apos;t a formal club. There's no structure or hierarchies. It&apos;s just a collection of raw and unfiltered versions of students who are inherently curious or want to be.
+                Ahalia Overflow isn&apos;t a formal club. There&apos;s no structure or hierarchies. It&apos;s just a collection of raw and unfiltered versions of students who are inherently curious or want to be.
               </p>
               <p className="text-gray-400 leading-relaxed mb-4">
-                It's made by people who wants to do nerdy stuffs for the people who want to do nerdy stuffs
+                It&apos;s made by people who wants to do nerdy stuffs for the people who want to do nerdy stuffs
               </p>
               <p className="text-gray-400 leading-relaxed">
                 There are no commitments or requirements — just show up.
@@ -150,7 +159,7 @@ export default function HomePage() {
       )}
 
       {/* Stats Bar */}
-      <section className="py-20 px-4 bg-indigo-950/30 border-y border-indigo-900/30">
+      {/* <section className="py-20 px-4 bg-indigo-950/30 border-y border-indigo-900/30">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
@@ -165,7 +174,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Banner */}
       <section className="py-24 px-4 bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950">

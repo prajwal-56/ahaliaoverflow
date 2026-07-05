@@ -7,8 +7,8 @@ import Footer from '@/components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Ahalia Overflow — Your College Tech Community',
-  description: "Ahalia Overflow is a space for people who open up a laptop for fun, not just for assignments. stay Curious. Break. Tinker. Learn.",
+  title: 'Ahalia Overflow — Your Friendly neighbourhood IT people',
+  description: "Ahalia Overflow | stay Curious. Break. Tinker. Learn.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
