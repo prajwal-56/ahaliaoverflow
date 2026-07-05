@@ -170,11 +170,24 @@ export default function EventDetailPage() {
             <div className="text-white font-semibold">{event.venue}</div>
           </div>
           <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-            <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Capacity & Availability</div>
-            <div className="text-white font-semibold">{event.capacity} total seats</div>
-            <div className="text-indigo-300 text-sm mt-1">
-              {event.seats_left !== undefined ? `${event.seats_left} seats left` : 'Loading availability...'}
+            <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">
+              {event.status === 'completed' ? 'Participation' : 'Capacity & Availability'}
             </div>
+            {event.status === 'completed' ? (
+              <>
+                <div className="text-white font-semibold">Event Completed</div>
+                <div className="text-indigo-300 text-sm mt-1">
+                  {event.registered_count || 0} participants registered
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-white font-semibold">{event.capacity} total seats</div>
+                <div className="text-indigo-300 text-sm mt-1">
+                  {event.seats_left !== undefined ? `${event.seats_left} seats left` : 'Loading availability...'}
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
