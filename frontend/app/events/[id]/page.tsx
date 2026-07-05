@@ -132,14 +132,26 @@ export default function EventDetailPage() {
         </div>
       )}
 
-      <div className="relative h-72 md:h-96">
+      <div className="relative h-72 md:h-[450px] overflow-hidden bg-gray-950 flex items-center justify-center">
+        {/* Blurred background image to fill space beautifully without cut-off */}
         <Image
           src={event.cover_image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200'}
-          alt={event.title}
+          alt=""
           fill
-          className="object-cover"
+          className="object-cover blur-2xl opacity-30 scale-110"
+          priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/50 to-transparent" />
+        {/* Fully visible container image */}
+        <div className="relative w-full h-full max-w-4xl mx-auto z-10 flex items-center justify-center">
+          <Image
+            src={event.cover_image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200'}
+            alt={event.title}
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent z-20 pointer-events-none" />
       </div>
       <div className="max-w-4xl mx-auto px-4 -mt-24 relative z-10 pb-16">
         <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -196,7 +208,14 @@ export default function EventDetailPage() {
         </div>
         {(event.status === 'upcoming' || event.status === 'ongoing') && (
           <div className="mb-8">
-            {event.seats_left !== undefined && event.seats_left <= 0 ? (
+            {eventDate === null ? (
+              <button
+                onClick={() => alert("You'll be notified when this event goes live!")}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 text-lg"
+              >
+                Notify me when live
+              </button>
+            ) : event.seats_left !== undefined && event.seats_left <= 0 ? (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 font-semibold px-6 py-4 rounded-lg inline-block text-lg">
                 🚫 Event is Fully Booked. Try contacting the organizer irl or reach out to us (Email/Whatsapp)
               </div>
@@ -209,8 +228,8 @@ export default function EventDetailPage() {
                 Register Now
               </button>
             ) : (
-              <Link href="/auth/login" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 text-lg">
-                Log in to Register
+              <Link href={`/auth/login?redirectTo=/events/${event.id}`} className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 inline-block text-lg">
+                Log In to Register
               </Link>
             )}
           </div>

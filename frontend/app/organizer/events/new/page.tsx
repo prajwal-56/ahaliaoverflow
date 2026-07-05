@@ -9,6 +9,7 @@ export default function NewEventPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
     title: '',
@@ -21,10 +22,7 @@ export default function NewEventPage() {
     custom_host_organizer: ''
   })
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    
+  const handleUploadFile = async (file: File) => {
     setUploading(true)
     setError('')
     
@@ -122,34 +120,64 @@ export default function NewEventPage() {
             </div>
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Cover Image</label>
-              <div className="flex gap-4 items-center">
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <button
-                  type="button"
+              <div className="space-y-4">
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={async (e) => {
+                    e.preventDefault()
+                    setIsDragging(false)
+                    const file = e.dataTransfer.files?.[0]
+                    if (file) {
+                      await handleUploadFile(file)
+                    }
+                  }}
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  className="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+                  className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                    isDragging 
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300 shadow-lg shadow-indigo-500/5' 
+                      : 'border-gray-700 hover:border-indigo-500/50 bg-gray-900/40 text-gray-400 hover:text-gray-300'
+                  }`}
                 >
-                  {uploading ? 'Uploading...' : '📁 Upload Local Image'}
-                </button>
-                <span className="text-gray-500 text-sm">or</span>
-                <input
-                  type="url"
-                  value={form.cover_image_url}
-                  onChange={(e) => update('cover_image_url', e.target.value)}
-                  className="flex-1 bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
-                  placeholder="Paste cover image URL here..."
-                />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleUploadFile(file)
+                    }}
+                    className="hidden"
+                  />
+                  <div className="text-3xl mb-2">📁</div>
+                  <p className="font-medium text-sm">
+                    {uploading ? 'Uploading image...' : 'Drag & drop your event cover here, or click to browse'}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Supports PNG, JPG, JPEG, WEBP</p>
+                </div>
+
+                <div className="flex gap-4 items-center">
+                  <span className="text-gray-500 text-sm">or</span>
+                  <input
+                    type="url"
+                    value={form.cover_image_url}
+                    onChange={(e) => update('cover_image_url', e.target.value)}
+                    className="flex-1 bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                    placeholder="Paste external cover image URL here..."
+                  />
+                </div>
               </div>
+              
               {form.cover_image_url && (
-                <div className="mt-4 relative w-full h-40 rounded-lg overflow-hidden border border-gray-700">
+                <div className="mt-4 relative w-full h-48 rounded-xl overflow-hidden border border-gray-700">
                   <img src={form.cover_image_url} alt="Cover Preview" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => update('cover_image_url', '')}
+                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-500 text-white text-xs px-2.5 py-1.5 rounded-lg transition-colors font-semibold"
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </div>
