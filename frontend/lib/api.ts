@@ -101,7 +101,7 @@ export async function uploadEventImage(formData: FormData) {
   const { supabase } = await import('./supabase')
   const session = await supabase.auth.getSession()
   const token = session.data.session?.access_token
-  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {}
   const res = await fetch(`${API_URL}/events/upload-image`, {
     method: 'POST',
     headers,
