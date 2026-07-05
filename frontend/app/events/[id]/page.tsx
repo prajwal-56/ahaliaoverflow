@@ -132,17 +132,17 @@ export default function EventDetailPage() {
         </div>
       )}
 
-      <div className="relative h-72 md:h-[450px] overflow-hidden bg-gray-950 flex items-center justify-center">
+      <div className="relative h-96 md:h-[500px] overflow-hidden bg-gray-950 flex items-center justify-center">
         {/* Blurred background image to fill space beautifully without cut-off */}
         <Image
           src={event.cover_image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200'}
           alt=""
           fill
-          className="object-cover blur-2xl opacity-30 scale-110"
+          className="object-cover blur-2xl opacity-20 scale-110"
           priority
         />
         {/* Fully visible container image */}
-        <div className="relative w-full h-full max-w-4xl mx-auto z-10 flex items-center justify-center">
+        <div className="relative w-full h-full max-w-4xl mx-auto z-10 flex items-center justify-center pb-24">
           <Image
             src={event.cover_image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200'}
             alt={event.title}
@@ -151,20 +151,26 @@ export default function EventDetailPage() {
             priority
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent z-20 pointer-events-none" />
-      </div>
-      <div className="max-w-4xl mx-auto px-4 -mt-24 relative z-10 pb-16">
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium border capitalize ${statusColors[event.status] || statusColors.upcoming}`}>
-            {event.status}
-          </span>
-          {event.host_organizer && event.host_organizer !== 'independent' && (
-            <span className="px-3 py-1 rounded-full text-sm font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
-              Hosted by {event.host_organizer}
-            </span>
-          )}
+        
+        {/* Bottom Banner Overlay for Text (Title and Badges) with background opacity */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-gray-950 via-gray-950/85 to-transparent pt-16 pb-6 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <span className={`px-3 py-1 rounded-full text-xs font-medium border capitalize ${statusColors[event.status] || statusColors.upcoming}`}>
+                {event.status}
+              </span>
+              {event.host_organizer && event.host_organizer !== 'independent' && (
+                <span className="px-3 py-1 rounded-full text-xs font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+                  Hosted by {event.host_organizer}
+                </span>
+              )}
+            </div>
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg">{event.title}</h1>
+          </div>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{event.title}</h1>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 mt-8 relative z-10 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
             <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Date & Time</div>
