@@ -43,15 +43,16 @@ export default function HomePage() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-8 text-indigo-300 text-sm font-medium">
+          {/* { <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-2 mb-8 text-indigo-300 text-sm font-medium">
             <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
             Your College Tech Community
-          </div>
+            
+          </div> } */}
           <h1 className="font-serif text-6xl md:text-8xl font-bold text-white mb-6 leading-tight">
             Ahalia <span className="text-indigo-400">Overflow</span>
           </h1>
           <p className="text-xl md:text-2xl text-indigo-400 font-mono mb-12 max-w-2xl mx-auto leading-relaxed">
-            &gt; stay Curious. Break. Tinker. Learn
+            &gt; stay Curious. Break. <a href="https://www.instagram.com/tinkerhub.aset">Tinker.</a> Learn.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/events" className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
@@ -75,17 +76,14 @@ export default function HomePage() {
             <div>
               <div className="text-indigo-400 text-sm font-medium uppercase tracking-widest mb-4">About Us</div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Who We Are</h2>
-              <p className="text-gray-300 text-lg leading-relaxed mb-6 font-semibold border-l-2 border-indigo-500 pl-4">
-                This isn&apos;t a club. There&apos;s no membership, no fee, no attendance register. Nobody&apos;s the &quot;president.&quot; There&apos;s nothing to give and nothing to take.
+              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                Ahalia Overflow isn&apos;t a formal club. There's no structure or hierarchies. It&apos;s just a collection of raw and unfiltered versions of students who are inherently curious or want to be.
               </p>
               <p className="text-gray-400 leading-relaxed mb-4">
-                It&apos;s just a space — for people who open up a laptop for fun, not just for assignments. People who&apos;ve broken something at 2 AM and fixed it out of sheer stubbornness. People who read a datasheet the way others read a novel. People who think &quot;engineering is cool&quot; isn&apos;t a marketing line — it&apos;s just true.
-              </p>
-              <p className="text-gray-400 leading-relaxed mb-4">
-                If you&apos;ve ever felt like the only one in your batch who actually wants to know how something works — you&apos;re not the only one. You just haven&apos;t found us yet.
+                It's made by people who wants to do nerdy stuffs for the people who want to do nerdy stuffs
               </p>
               <p className="text-gray-400 leading-relaxed">
-                No small talk here. We skip straight to the deep end — the weird rabbit holes, the &quot;wait, how does that even work,&quot; and the arguments about whether tabs or spaces are a war crime. Come lurk. Come build. Come argue about your favorite programming language being objectively superior. No sign-up required to belong — just show up.
+                There are no commitments or requirements — just show up.
               </p>
               <div className="flex gap-4 mt-8">
                 <Link href="/events" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
@@ -174,7 +172,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to join?</h2>
           <p className="text-gray-300 text-xl mb-8 leading-relaxed">
-            We run events every semester. No signup required — just show up.
+            No signup and Stay Tuned — Or just show up.
           </p>
           <Link href="/events" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-10 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/30">
             View Events
