@@ -114,10 +114,20 @@ def update_event_status(event_id: str, status: str, user=Depends(get_organizer_u
 
 @router.post("/upload-image")
 def upload_event_image(file: UploadFile = File(...), user=Depends(get_organizer_user)):
-    os.makedirs("static/uploads", exist_ok=True)
-    ext = os.path.splitext(file.filename)[1]
-    filename = f"{uuid.uuid4()}{ext}"
-    file_path = f"static/uploads/{filename}"
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"url": f"/static/uploads/{filename}"}
+    try:
+        file_bytes = file.file.read()
+        ext = os.path.splitext(file.filename)[1]
+        filename = f"{uuid.uuid4()}{ext}"
+        
+        content_type = file.content_type or "image/jpeg"
+        
+        supabase.storage.from_("event-covers").upload(
+            path=filename,
+            file=file_bytes,
+            file_options={"content-type": content_type}
+        )
+        
+        public_url = supabase.storage.from_("event-covers").get_public_url(filename)
+        return {"url": public_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload image to storage: {str(e)}")

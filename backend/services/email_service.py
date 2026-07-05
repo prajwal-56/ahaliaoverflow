@@ -28,21 +28,21 @@ def send_email(to: str, subject: str, html_body: str, inline_image_path: str = N
         smtp.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
         smtp.sendmail(GMAIL_ADDRESS, to, msg.as_string())
 
-def send_registration_confirmation(to: str, full_name: str, event_title: str, event_date: str, qr_path: str, token: str):
+def send_registration_confirmation(to: str, full_name: str, event_title: str, event_date: str, qr_url: str, token: str):
     subject = f"You're registered for {event_title}!"
     html = f"""
     <html><body style="font-family: sans-serif; max-width: 600px; margin: auto;">
       <h2>Hey {full_name}, you're in! 🎉</h2>
       <p>Your registration for <strong>{event_title}</strong> on <strong>{event_date}</strong> is confirmed.</p>
       <p>Show this QR code at the event entrance for check-in:</p>
-      <img src="cid:qr_code" width="200" height="200" alt="QR Code" />
+      <img src="{qr_url}" width="200" height="200" alt="QR Code" />
       <p style="color: #888; font-size: 12px;">Token: {token}</p>
       <p>See you there!</p>
       <hr/>
       <p style="color: #aaa; font-size: 11px;">Ahalia Overflow — Your college's tech community</p>
     </body></html>
     """
-    send_email(to, subject, html, inline_image_path=qr_path, inline_image_cid="qr_code")
+    send_email(to, subject, html)
 
 def send_certificate_ready(to: str, full_name: str, event_title: str, certificate_url: str):
     subject = f"Your certificate for {event_title} is ready!"

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from services.supabase_client import supabase
-from services.qr_service import generate_qr
+from services.qr_service import generate_qr_bytes
 from services.email_service import send_registration_confirmation
 from middleware.auth_middleware import get_current_user
 import uuid, os
@@ -28,11 +28,27 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
     if not profile.data:
         raise HTTPException(status_code=404, detail="User profile not found. Please complete your profile.")
     token = str(uuid.uuid4())
+    
+    # Generate QR image bytes in memory
+    qr_bytes = generate_qr_bytes(token)
+    
+    # Upload to Supabase Storage in 'qr-codes' bucket
+    filename = f"{token}.png"
+    try:
+        supabase.storage.from_("qr-codes").upload(
+            path=filename,
+            file=qr_bytes,
+            file_options={"content-type": "image/png"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload QR code to storage: {str(e)}")
+
+    # Get public URL
+    qr_url = supabase.storage.from_("qr-codes").get_public_url(filename)
+    
     reg_data = {"user_id": user.id, "event_id": payload.event_id, "token": token, "checked_in": False}
     registration = supabase.table("registrations").insert(reg_data).execute()
-    qr_dir = f"static/qr/{payload.event_id}"
-    qr_path = f"{qr_dir}/{token}.png"
-    generate_qr(token, qr_path)
+    
     event_date = event.data["date"][:10]
     try:
         send_registration_confirmation(
@@ -40,7 +56,7 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
             full_name=profile.data["full_name"],
             event_title=event.data["title"],
             event_date=event_date,
-            qr_path=qr_path,
+            qr_url=qr_url,
             token=token
         )
     except Exception as e:
@@ -63,14 +79,11 @@ def cancel_registration(registration_id: str, user=Depends(get_current_user)):
     # Delete from DB
     supabase.table("registrations").delete().eq("id", registration_id).execute()
     
-    # Clean up QR code file
+    # Clean up QR code from Supabase Storage
     token = reg.data["token"]
-    event_id = reg.data["event_id"]
-    qr_path = f"static/qr/{event_id}/{token}.png"
-    if os.path.exists(qr_path):
-        try:
-            os.remove(qr_path)
-        except Exception:
-            pass
+    try:
+        supabase.storage.from_("qr-codes").remove([f"{token}.png"])
+    except Exception as e:
+        print(f"Failed to remove QR code from storage: {e}")
             
     return {"message": "Registration cancelled successfully"}
