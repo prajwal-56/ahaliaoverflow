@@ -4,10 +4,10 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 border-t border-gray-800 py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="text-xl font-bold text-indigo-400 mb-3">⚡ Ahalia Overflow</div>
-            <p className="text-gray-500 text-sm leading-relaxed">Your college&apos;s tech community. Spilling past the boundaries of textbook learning.</p>
+            <p className="text-gray-500 text-sm leading-relaxed">Stay Curious. Build. Break. Tinker. Learn</p>
           </div>
           <div>
             <h3 className="text-gray-300 font-semibold mb-4">Quick Links</h3>
@@ -17,6 +17,13 @@ export default function Footer() {
               <li><Link href="/dashboard" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">Dashboard</Link></li>
               <li><Link href="/auth/login" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">Log In</Link></li>
             </ul>
+          </div>
+          <div>
+            <h3 className="text-gray-300 font-semibold mb-4">Feedback & Bugs</h3>
+            <p className="text-gray-500 text-sm leading-relaxed mb-3">Spotted a bug or have ideas to improve this site?</p>
+            <a href="mailto:bugs@ahaliaoverflow.in" className="inline-flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium">
+              ✉️ Report Bug / Feedback
+            </a>
           </div>
           <div>
             <h3 className="text-gray-300 font-semibold mb-4">Connect</h3>

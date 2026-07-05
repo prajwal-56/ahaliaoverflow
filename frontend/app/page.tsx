@@ -94,8 +94,8 @@ export default function HomePage() {
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-600/20 rounded-2xl blur-2xl" />
               <Image
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800"
-                alt="Team working together"
+                src="/richard_feynnman.jpg"
+                alt="Study hard what interests you the most in the most undisciplined, irreverent and original manner possible"
                 width={600}
                 height={400}
                 className="relative rounded-2xl object-cover w-full border border-gray-700"
@@ -172,7 +172,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to join?</h2>
           <p className="text-gray-300 text-xl mb-8 leading-relaxed">
-            No signup and Stay Tuned — Or just show up.
+            Signup and Stay Tuned — Or just show up.
           </p>
           <Link href="/events" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-10 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/30">
             View Events
