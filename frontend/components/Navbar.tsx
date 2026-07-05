@@ -59,7 +59,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-indigo-400 hover:text-indigo-300 transition-colors">⚡ Coding Club Ahalia</Link>
+        <Link href="/" className="text-xl font-bold text-indigo-400 hover:text-indigo-300 transition-colors">⚡ Ahalia Overflow</Link>
         <div className="hidden md:flex items-center gap-8">
           <Link href="/events" className="text-gray-400 hover:text-white transition-colors font-medium">Events</Link>
           <Link href="/#about" className="text-gray-400 hover:text-white transition-colors font-medium">About</Link>

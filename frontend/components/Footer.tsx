@@ -6,8 +6,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="text-xl font-bold text-indigo-400 mb-3">⚡ Coding Club Ahalia</div>
-            <p className="text-gray-500 text-sm leading-relaxed">Your college&apos;s home for everything technical. Where curious minds build, break, and learn.</p>
+            <div className="text-xl font-bold text-indigo-400 mb-3">⚡ Ahalia Overflow</div>
+            <p className="text-gray-500 text-sm leading-relaxed">Your college&apos;s tech community. Spilling past the boundaries of textbook learning.</p>
           </div>
           <div>
             <h3 className="text-gray-300 font-semibold mb-4">Quick Links</h3>
@@ -30,7 +30,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-6 text-center text-gray-600 text-sm">© {new Date().getFullYear()} Coding Club Ahalia. Built by Coding Club Ahalia.</div>
+        <div className="border-t border-gray-800 pt-6 text-center text-gray-600 text-sm">© {new Date().getFullYear()} Ahalia Overflow. Built with curiosity.</div>
       </div>
     </footer>
   )

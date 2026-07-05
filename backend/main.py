@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from routers import events, registrations, checkin, certificates, admin
 import os
 
-app = FastAPI(title="Coding Club Ahalia API")
+app = FastAPI(title="Ahalia Overflow API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,4 +24,4 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 @app.get("/")
 def root():
-    return {"status": "Coding Club Ahalia API is running"}
+    return {"status": "Ahalia Overflow API is running"}

@@ -59,7 +59,7 @@ export default function SignupPage() {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-400">⚡ Coding Club Ahalia</Link>
+          <Link href="/" className="text-3xl font-bold text-indigo-400">⚡ Ahalia Overflow</Link>
           <h1 className="text-2xl font-bold text-white mt-4">Create an account</h1>
           <p className="text-gray-400 mt-2">Join the community</p>
         </div>

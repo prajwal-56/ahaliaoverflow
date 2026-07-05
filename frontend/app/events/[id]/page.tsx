@@ -215,7 +215,7 @@ export default function EventDetailPage() {
             If you are confused about how the website works, didn't receive your QR ticket, or have queries about this event, feel free to contact us.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="mailto:support@codingclubahalia.in" className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-gray-700">
+            <a href="mailto:support@ahaliaoverflow.in" className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-gray-700">
               ✉️ Email Support
             </a>
             <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="bg-green-600/10 hover:bg-green-600/20 text-green-400 border border-green-500/20 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">

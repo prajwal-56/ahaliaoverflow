@@ -39,7 +39,7 @@ def send_registration_confirmation(to: str, full_name: str, event_title: str, ev
       <p style="color: #888; font-size: 12px;">Token: {token}</p>
       <p>See you there!</p>
       <hr/>
-      <p style="color: #aaa; font-size: 11px;">Coding Club Ahalia — Your college's tech community</p>
+      <p style="color: #aaa; font-size: 11px;">Ahalia Overflow — Your college's tech community</p>
     </body></html>
     """
     send_email(to, subject, html, inline_image_path=qr_path, inline_image_cid="qr_code")
@@ -52,7 +52,7 @@ def send_certificate_ready(to: str, full_name: str, event_title: str, certificat
       <p>Your certificate of participation for <strong>{event_title}</strong> is ready.</p>
       <p><a href="{certificate_url}" style="background:#4F46E5;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;">Download Certificate</a></p>
       <hr/>
-      <p style="color: #aaa; font-size: 11px;">Coding Club Ahalia</p>
+      <p style="color: #aaa; font-size: 11px;">Ahalia Overflow</p>
     </body></html>
     """
     send_email(to, subject, html)

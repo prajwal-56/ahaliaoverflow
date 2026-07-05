@@ -48,19 +48,17 @@ export default function HomePage() {
             Your College Tech Community
           </div>
           <h1 className="font-serif text-6xl md:text-8xl font-bold text-white mb-6 leading-tight">
-            Coding Club <span className="text-indigo-400">Ahalia</span>
+            Ahalia <span className="text-indigo-400">Overflow</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Where curious minds <span className="text-indigo-400">build</span>,{' '}
-            <span className="text-purple-400">break</span>, and{' '}
-            <span className="text-pink-400">learn</span>.
+          <p className="text-xl md:text-2xl text-indigo-400 font-mono mb-12 max-w-2xl mx-auto leading-relaxed">
+            &gt; stay Curious. Break. Tinker. Learn
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/events" className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
               Explore Events
             </Link>
             <Link href="/auth/signup" className="border border-indigo-500/50 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:bg-indigo-500/10">
-              Join the Club
+              Join the Overflow
             </Link>
           </div>
         </div>
@@ -77,14 +75,17 @@ export default function HomePage() {
             <div>
               <div className="text-indigo-400 text-sm font-medium uppercase tracking-widest mb-4">About Us</div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Who We Are</h2>
-              <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                Coding Club Ahalia is Ahalia School of Engineering and Technology&apos;s home for everything technical.
-                We run hackathons, workshops, coding contests, and talk sessions — all free, all open to
-                any student who&apos;s curious enough to show up.
+              <p className="text-gray-300 text-lg leading-relaxed mb-6 font-semibold border-l-2 border-indigo-500 pl-4">
+                This isn&apos;t a club. There&apos;s no membership, no fee, no attendance register. Nobody&apos;s the &quot;president.&quot; There&apos;s nothing to give and nothing to take.
+              </p>
+              <p className="text-gray-400 leading-relaxed mb-4">
+                It&apos;s just a space — for people who open up a laptop for fun, not just for assignments. People who&apos;ve broken something at 2 AM and fixed it out of sheer stubbornness. People who read a datasheet the way others read a novel. People who think &quot;engineering is cool&quot; isn&apos;t a marketing line — it&apos;s just true.
+              </p>
+              <p className="text-gray-400 leading-relaxed mb-4">
+                If you&apos;ve ever felt like the only one in your batch who actually wants to know how something works — you&apos;re not the only one. You just haven&apos;t found us yet.
               </p>
               <p className="text-gray-400 leading-relaxed">
-                Whether you&apos;re just starting out or already building projects, Coding Club Ahalia is where you
-                find your people, sharpen your skills, and make something worth showing.
+                No small talk here. We skip straight to the deep end — the weird rabbit holes, the &quot;wait, how does that even work,&quot; and the arguments about whether tabs or spaces are a war crime. Come lurk. Come build. Come argue about your favorite programming language being objectively superior. No sign-up required to belong — just show up.
               </p>
               <div className="flex gap-4 mt-8">
                 <Link href="/events" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
