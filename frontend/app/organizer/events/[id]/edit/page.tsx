@@ -1,13 +1,16 @@
 'use client'
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { createEvent, uploadEventImage } from '@/lib/api'
+import { getEvent, updateEvent, uploadEventImage } from '@/lib/api'
 
-export default function NewEventPage() {
+export default function EditEventPage() {
   const router = useRouter()
+  const { id } = useParams<{ id: string }>()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [loading, setLoading] = useState(false)
+  
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
@@ -17,8 +20,32 @@ export default function NewEventPage() {
     venue: '',
     capacity: '',
     cover_image_url: '',
-    host_organizer: 'independent'
+    host_organizer: 'independent',
+    status: 'upcoming'
   })
+
+  useEffect(() => {
+    getEvent(id)
+      .then((data) => {
+        // Convert ISO date string to datetime-local input format (YYYY-MM-DDTHH:MM)
+        const localDate = data.date ? data.date.slice(0, 16) : ''
+        setForm({
+          title: data.title || '',
+          description: data.description || '',
+          date: localDate,
+          venue: data.venue || '',
+          capacity: data.capacity?.toString() || '',
+          cover_image_url: data.cover_image_url || '',
+          host_organizer: data.host_organizer || 'independent',
+          status: data.status || 'upcoming'
+        })
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError('Failed to load event data.')
+        setLoading(false)
+      })
+  }, [id])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -44,33 +71,40 @@ export default function NewEventPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setSaving(true)
     setError('')
     try {
-      await createEvent({
+      await updateEvent(id, {
         title: form.title,
         description: form.description,
         date: new Date(form.date).toISOString(),
         venue: form.venue,
         capacity: parseInt(form.capacity),
         cover_image_url: form.cover_image_url || undefined,
-        host_organizer: form.host_organizer
+        host_organizer: form.host_organizer,
+        status: form.status
       })
       router.push('/organizer')
     } catch (err: any) {
-      setError(err.message || 'Failed to create event')
-      setLoading(false)
+      setError(err.message || 'Failed to update event')
+      setSaving(false)
     }
   }
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }))
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="w-12 h-12 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gray-950 px-4 py-16">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/organizer" className="text-gray-400 hover:text-white transition-colors">← Back</Link>
-          <h1 className="text-3xl font-bold text-white">Create New Event</h1>
+          <h1 className="text-3xl font-bold text-white">Edit Event</h1>
         </div>
         <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
           {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">{error}</div>}
@@ -78,7 +112,7 @@ export default function NewEventPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Event Title *</label>
-                <input type="text" value={form.title} onChange={(e) => update('title', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. HackFest 2024" />
+                <input type="text" value={form.title} onChange={(e) => update('title', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Host Organizer *</label>
@@ -92,21 +126,30 @@ export default function NewEventPage() {
             </div>
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Description *</label>
-              <textarea value={form.description} onChange={(e) => update('description', e.target.value)} required rows={4} className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors resize-none" placeholder="Describe the event..." />
+              <textarea value={form.description} onChange={(e) => update('description', e.target.value)} required rows={4} className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors resize-none" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Date & Time *</label>
                 <input type="datetime-local" value={form.date} onChange={(e) => update('date', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Capacity *</label>
-                <input type="number" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} required min="1" className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. 100" />
+                <input type="number" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} required min="1" className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">Status *</label>
+                <select value={form.status} onChange={(e) => update('status', e.target.value)} className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors">
+                  <option value="upcoming">Upcoming</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
             </div>
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Venue *</label>
-              <input type="text" value={form.venue} onChange={(e) => update('venue', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Main Auditorium, Block A" />
+              <input type="text" value={form.venue} onChange={(e) => update('venue', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
             </div>
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Cover Image</label>
@@ -141,8 +184,8 @@ export default function NewEventPage() {
                 </div>
               )}
             </div>
-            <button type="submit" disabled={loading || uploading} className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white font-semibold py-4 rounded-lg transition-all duration-200 text-lg">
-              {loading ? 'Creating...' : 'Create Event'}
+            <button type="submit" disabled={saving || uploading} className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white font-semibold py-4 rounded-lg transition-all duration-200 text-lg">
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
         </div>

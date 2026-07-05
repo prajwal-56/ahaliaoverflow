@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('')
+  const [registerNumber, setRegisterNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -18,13 +19,23 @@ export default function SignupPage() {
     if (password !== confirmPassword) { setError('Passwords do not match'); return }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return }
     setLoading(true)
-    const { data, error: signupError } = await supabase.auth.signUp({ email, password })
+    const { data, error: signupError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          register_number: registerNumber
+        }
+      }
+    })
     if (signupError) { setError(signupError.message); setLoading(false); return }
     if (data.user) {
       const { error: profileError } = await supabase.from('users').insert({
         id: data.user.id,
         email: data.user.email,
         full_name: fullName,
+        register_number: registerNumber,
         role: 'participant'
       })
       if (profileError && profileError.code !== '23505') console.error('Profile insert error:', profileError)
@@ -58,6 +69,10 @@ export default function SignupPage() {
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Full Name</label>
               <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="Your full name" />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">Register Number</label>
+              <input type="text" value={registerNumber} onChange={(e) => setRegisterNumber(e.target.value.toUpperCase())} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. ATP20CS001" />
             </div>
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Email</label>

@@ -63,7 +63,8 @@ export async function getCertificate(registrationId: string) {
 
 export async function createEvent(data: {
   title: string, description: string, date: string,
-  venue: string, capacity: number, cover_image_url?: string
+  venue: string, capacity: number, cover_image_url?: string,
+  host_organizer?: string
 }) {
   const headers = await authHeaders()
   const res = await fetch(`${API_URL}/events/`, {
@@ -74,6 +75,64 @@ export async function createEvent(data: {
   if (!res.ok) {
     const err = await res.json()
     throw new Error(err.detail || 'Failed to create event')
+  }
+  return res.json()
+}
+
+export async function updateEvent(id: string, data: {
+  title?: string, description?: string, date?: string,
+  venue?: string, capacity?: number, cover_image_url?: string,
+  host_organizer?: string, status?: string
+}) {
+  const headers = await authHeaders()
+  const res = await fetch(`${API_URL}/events/${id}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail || 'Failed to update event')
+  }
+  return res.json()
+}
+
+export async function uploadEventImage(formData: FormData) {
+  const { supabase } = await import('./supabase')
+  const session = await supabase.auth.getSession()
+  const token = session.data.session?.access_token
+  const headers = token ? { Authorization: `Bearer ${token}` } : {}
+  const res = await fetch(`${API_URL}/events/upload-image`, {
+    method: 'POST',
+    headers,
+    body: formData
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail || 'Failed to upload image')
+  }
+  return res.json()
+}
+
+export async function cancelRegistration(registrationId: string) {
+  const headers = await authHeaders()
+  const res = await fetch(`${API_URL}/registrations/${registrationId}`, {
+    method: 'DELETE',
+    headers
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail || 'Failed to cancel registration')
+  }
+  return res.json()
+}
+
+export async function getEventRegistrations(eventId: string) {
+  const headers = await authHeaders()
+  const res = await fetch(`${API_URL}/admin/events/${eventId}/registrations`, { headers })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail || 'Failed to load registrations')
   }
   return res.json()
 }

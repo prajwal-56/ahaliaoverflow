@@ -71,10 +71,16 @@ export default function OrganizerPage() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Link href={`/organizer/checkin/${event.id}`} className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-600/30 px-4 py-2 rounded-lg text-sm font-medium transition-all">
-                  📷 Check-in Scanner
+                  📷 Check-in
+                </Link>
+                <Link href={`/organizer/events/${event.id}/participants`} className="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-600/30 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                  👥 Participants
+                </Link>
+                <Link href={`/organizer/events/${event.id}/edit`} className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 border border-amber-600/30 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                  ✏️ Edit
                 </Link>
                 <Link href={`/events/${event.id}`} className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all">
-                  View Event
+                  View
                 </Link>
               </div>
             </div>

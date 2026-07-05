@@ -51,3 +51,26 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
 def my_registrations(user=Depends(get_current_user)):
     result = supabase.table("registrations").select("*, events(*)").eq("user_id", user.id).execute()
     return result.data
+
+@router.delete("/{registration_id}")
+def cancel_registration(registration_id: str, user=Depends(get_current_user)):
+    reg = supabase.table("registrations").select("*").eq("id", registration_id).single().execute()
+    if not reg.data:
+        raise HTTPException(status_code=404, detail="Registration not found")
+    if reg.data["user_id"] != user.id:
+        raise HTTPException(status_code=403, detail="You can only cancel your own registrations")
+    
+    # Delete from DB
+    supabase.table("registrations").delete().eq("id", registration_id).execute()
+    
+    # Clean up QR code file
+    token = reg.data["token"]
+    event_id = reg.data["event_id"]
+    qr_path = f"static/qr/{event_id}/{token}.png"
+    if os.path.exists(qr_path):
+        try:
+            os.remove(qr_path)
+        except Exception:
+            pass
+            
+    return {"message": "Registration cancelled successfully"}

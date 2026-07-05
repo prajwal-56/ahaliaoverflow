@@ -24,6 +24,9 @@ interface EventDetail {
   status: string
   cover_image_url: string | null
   capacity: number
+  host_organizer: string | null
+  seats_left?: number
+  registered_count?: number
   winners: Winner[]
 }
 
@@ -34,6 +37,7 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [registering, setRegistering] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
@@ -46,14 +50,26 @@ export default function EventDetailPage() {
     setTimeout(() => setToast(null), 4000)
   }
 
+  const handleRegisterClick = () => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+    setShowConfirm(true)
+  }
+
   const handleRegister = async () => {
-    if (!user) { router.push('/auth/login'); return }
     setRegistering(true)
     try {
       await registerForEvent(id)
       showToast('Registered! Check your email for your QR code.', 'success')
+      setShowConfirm(false)
+      // Refresh event details to fetch updated seats_left
+      const updatedData = await getEvent(id)
+      setEvent(updatedData)
     } catch (err: any) {
       showToast(err.message || 'Registration failed', 'error')
+      setShowConfirm(false)
     } finally {
       setRegistering(false)
     }
@@ -87,6 +103,35 @@ export default function EventDetailPage() {
           {toast.message}
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-800 border border-gray-700 max-w-md w-full rounded-2xl p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-2xl font-bold text-white mb-4">Confirm Registration</h3>
+            <p className="text-gray-300 mb-6">
+              Are you sure you want to register for <strong className="text-indigo-400">{event.title}</strong>? A unique ticket with a QR code will be generated and sent to your email.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleRegister}
+                disabled={registering}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white font-semibold py-3 rounded-lg transition-all"
+              >
+                {registering ? 'Registering...' : 'Yes, Confirm'}
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                disabled={registering}
+                className="flex-1 border border-gray-600 hover:border-gray-500 text-gray-300 font-semibold py-3 rounded-lg transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative h-72 md:h-96">
         <Image
           src={event.cover_image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200'}
@@ -101,6 +146,11 @@ export default function EventDetailPage() {
           <span className={`px-3 py-1 rounded-full text-sm font-medium border capitalize ${statusColors[event.status] || statusColors.upcoming}`}>
             {event.status}
           </span>
+          {event.host_organizer && event.host_organizer !== 'independent' && (
+            <span className="px-3 py-1 rounded-full text-sm font-medium border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+              Hosted by {event.host_organizer}
+            </span>
+          )}
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{event.title}</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -114,8 +164,11 @@ export default function EventDetailPage() {
             <div className="text-white font-semibold">{event.venue}</div>
           </div>
           <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-            <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Capacity</div>
-            <div className="text-white font-semibold">{event.capacity} seats</div>
+            <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Capacity & Availability</div>
+            <div className="text-white font-semibold">{event.capacity} total seats</div>
+            <div className="text-indigo-300 text-sm mt-1">
+              {event.seats_left !== undefined ? `${event.seats_left} seats left` : 'Loading availability...'}
+            </div>
           </div>
         </div>
         <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
@@ -124,13 +177,17 @@ export default function EventDetailPage() {
         </div>
         {(event.status === 'upcoming' || event.status === 'ongoing') && (
           <div className="mb-8">
-            {user ? (
+            {event.seats_left !== undefined && event.seats_left <= 0 ? (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 font-semibold px-6 py-4 rounded-lg inline-block text-lg">
+                🚫 Event is Fully Booked
+              </div>
+            ) : user ? (
               <button
-                onClick={handleRegister}
+                onClick={handleRegisterClick}
                 disabled={registering}
                 className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed text-lg"
               >
-                {registering ? 'Registering...' : 'Register Now'}
+                Register Now
               </button>
             ) : (
               <Link href="/auth/login" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 hover:scale-105 text-lg">
@@ -140,7 +197,7 @@ export default function EventDetailPage() {
           </div>
         )}
         {event.winners && event.winners.length > 0 && (
-          <div>
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-6">🏆 Winners</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {event.winners.map((winner) => (
@@ -149,6 +206,23 @@ export default function EventDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Support/Help Section */}
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 mt-12 text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl" />
+          <h2 className="text-xl font-bold text-white mb-2">Need Help or Facing Difficulties?</h2>
+          <p className="text-gray-400 text-sm max-w-lg mx-auto mb-6">
+            If you are confused about how the website works, didn't receive your QR ticket, or have queries about this event, feel free to contact us.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <a href="mailto:support@codingclubahalia.in" className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-gray-700">
+              ✉️ Email Support
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="bg-green-600/10 hover:bg-green-600/20 text-green-400 border border-green-500/20 px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+              💬 WhatsApp Query
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   )

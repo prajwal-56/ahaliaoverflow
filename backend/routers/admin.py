@@ -18,7 +18,7 @@ def add_winner(payload: WinnerCreate, user=Depends(get_organizer_user)):
 
 @router.get("/events/{event_id}/registrations")
 def event_registrations(event_id: str, user=Depends(get_organizer_user)):
-    result = supabase.table("registrations").select("*, users(full_name, email)").eq("event_id", event_id).execute()
+    result = supabase.table("registrations").select("*, users(full_name, email, register_number)").eq("event_id", event_id).execute()
     return result.data
 
 @router.patch("/users/{user_id}/role")

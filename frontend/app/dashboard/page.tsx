@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { supabase } from '@/lib/supabase'
-import { getMyRegistrations, getCertificate } from '@/lib/api'
+import { getMyRegistrations, getCertificate, cancelRegistration } from '@/lib/api'
 
 interface Registration {
   id: string
@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [registrations, setRegistrations] = useState<Registration[]>([])
   const [loading, setLoading] = useState(true)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -46,6 +47,19 @@ export default function DashboardPage() {
       alert(err.message || 'Failed to download certificate')
     } finally {
       setDownloadingId(null)
+    }
+  }
+
+  const handleCancelRegistration = async (regId: string, eventTitle: string) => {
+    if (!confirm(`Are you sure you want to cancel your registration for "${eventTitle}"?`)) return
+    setCancellingId(regId)
+    try {
+      await cancelRegistration(regId)
+      setRegistrations((prev) => prev.filter((r) => r.id !== regId))
+    } catch (err: any) {
+      alert(err.message || 'Failed to cancel registration')
+    } finally {
+      setCancellingId(null)
     }
   }
 
@@ -109,7 +123,16 @@ export default function DashboardPage() {
                           {downloadingId === reg.id ? 'Downloading...' : '📥 Certificate'}
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-600 italic">Attend to unlock</span>
+                        <div className="flex flex-col gap-2 items-center">
+                          <span className="text-xs text-gray-500 italic block">Attend to unlock</span>
+                          <button
+                            onClick={() => handleCancelRegistration(reg.id, reg.events?.title || 'event')}
+                            disabled={cancellingId === reg.id}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-1.5 rounded-lg transition-all"
+                          >
+                            {cancellingId === reg.id ? 'Cancelling...' : 'Cancel'}
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
