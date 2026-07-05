@@ -92,7 +92,7 @@ export default function EventDetailPage() {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400">Event not found.</div>
   )
 
-  const eventDate = new Date(event.date)
+  const eventDate = event.date ? new Date(event.date) : null
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -156,8 +156,14 @@ export default function EventDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
             <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Date & Time</div>
-            <div className="text-white font-semibold">{format(eventDate, 'EEE, d MMM yyyy')}</div>
-            <div className="text-gray-400 text-sm">{format(eventDate, 'h:mm a')}</div>
+            {eventDate ? (
+              <>
+                <div className="text-white font-semibold">{format(eventDate, 'EEE, d MMM yyyy')}</div>
+                <div className="text-gray-400 text-sm">{format(eventDate, 'h:mm a')}</div>
+              </>
+            ) : (
+              <div className="text-white font-semibold">Coming Soon</div>
+            )}
           </div>
           <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
             <div className="text-indigo-400 text-xs uppercase tracking-widest mb-1">Venue</div>

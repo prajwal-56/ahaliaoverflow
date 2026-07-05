@@ -21,14 +21,17 @@ export default function EditEventPage() {
     capacity: '',
     cover_image_url: '',
     host_organizer: 'independent',
+    custom_host_organizer: '',
     status: 'upcoming'
   })
 
   useEffect(() => {
     getEvent(id)
       .then((data) => {
-        // Convert ISO date string to datetime-local input format (YYYY-MM-DDTHH:MM)
         const localDate = data.date ? data.date.slice(0, 16) : ''
+        const standardOrganizers = ['independent', 'IEEE', 'IEDC', 'TinkerHub']
+        const isCustom = !standardOrganizers.includes(data.host_organizer || 'independent')
+
         setForm({
           title: data.title || '',
           description: data.description || '',
@@ -36,7 +39,8 @@ export default function EditEventPage() {
           venue: data.venue || '',
           capacity: data.capacity?.toString() || '',
           cover_image_url: data.cover_image_url || '',
-          host_organizer: data.host_organizer || 'independent',
+          host_organizer: isCustom ? 'custom' : (data.host_organizer || 'independent'),
+          custom_host_organizer: isCustom ? (data.host_organizer || '') : '',
           status: data.status || 'upcoming'
         })
         setLoading(false)
@@ -77,11 +81,11 @@ export default function EditEventPage() {
       await updateEvent(id, {
         title: form.title,
         description: form.description,
-        date: new Date(form.date).toISOString(),
+        date: form.date ? new Date(form.date).toISOString() : undefined,
         venue: form.venue,
         capacity: parseInt(form.capacity),
         cover_image_url: form.cover_image_url || undefined,
-        host_organizer: form.host_organizer,
+        host_organizer: form.host_organizer === 'custom' ? form.custom_host_organizer : form.host_organizer,
         status: form.status
       })
       router.push('/organizer')
@@ -121,7 +125,18 @@ export default function EditEventPage() {
                   <option value="IEEE">IEEE Student Branch</option>
                   <option value="IEDC">IEDC</option>
                   <option value="TinkerHub">TinkerHub</option>
+                  <option value="custom">Custom...</option>
                 </select>
+                {form.host_organizer === 'custom' && (
+                  <input
+                    type="text"
+                    value={form.custom_host_organizer}
+                    onChange={(e) => update('custom_host_organizer', e.target.value)}
+                    required
+                    className="w-full mt-3 bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                    placeholder="Enter custom organizer name..."
+                  />
+                )}
               </div>
             </div>
             <div>
@@ -130,8 +145,8 @@ export default function EditEventPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">Date & Time *</label>
-                <input type="datetime-local" value={form.date} onChange={(e) => update('date', e.target.value)} required className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
+                <label className="block text-gray-300 text-sm font-medium mb-2">Date & Time</label>
+                <input type="datetime-local" value={form.date} onChange={(e) => update('date', e.target.value)} className="w-full bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors" />
               </div>
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Capacity *</label>

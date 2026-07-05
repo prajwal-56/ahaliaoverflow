@@ -6,7 +6,7 @@ interface EventCardProps {
   id: string
   title: string
   description: string
-  date: string
+  date: string | null
   venue: string
   status: string
   cover_image_url: string | null
@@ -22,7 +22,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 
 export default function EventCard({ id, title, description, date, venue, status, cover_image_url }: EventCardProps) {
   const statusInfo = statusConfig[status] || statusConfig.upcoming
-  const eventDate = new Date(date)
+  const eventDate = date ? new Date(date) : null
   return (
     <Link href={`/events/${id}`} className="group block">
       <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-indigo-500/50 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 h-full flex flex-col">
@@ -44,7 +44,7 @@ export default function EventCard({ id, title, description, date, venue, status,
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-gray-400 text-sm">
               <span>📅</span>
-              <span>{format(eventDate, 'EEE, d MMM yyyy')} · {format(eventDate, 'h:mm a')}</span>
+              <span>{eventDate ? `${format(eventDate, 'EEE, d MMM yyyy')} · ${format(eventDate, 'h:mm a')}` : 'Coming Soon'}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-400 text-sm">
               <span>📍</span>

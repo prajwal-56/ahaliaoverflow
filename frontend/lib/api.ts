@@ -62,7 +62,7 @@ export async function getCertificate(registrationId: string) {
 }
 
 export async function createEvent(data: {
-  title: string, description: string, date: string,
+  title: string, description: string, date?: string,
   venue: string, capacity: number, cover_image_url?: string,
   host_organizer?: string
 }) {

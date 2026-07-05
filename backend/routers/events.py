@@ -13,7 +13,7 @@ router = APIRouter()
 class EventCreate(BaseModel):
     title: str
     description: str
-    date: datetime
+    date: Optional[datetime] = None
     venue: str
     capacity: int
     cover_image_url: Optional[str] = None
@@ -70,7 +70,7 @@ def create_event(payload: EventCreate, user=Depends(get_organizer_user)):
     data = {
         "title": payload.title,
         "description": payload.description,
-        "date": payload.date.isoformat(),
+        "date": payload.date.isoformat() if payload.date else None,
         "venue": payload.venue,
         "capacity": payload.capacity,
         "cover_image_url": payload.cover_image_url,

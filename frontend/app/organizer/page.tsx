@@ -65,7 +65,7 @@ export default function OrganizerPage() {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white">{event.title}</h3>
                 <div className="flex gap-4 mt-1 text-sm">
-                  <span className="text-gray-400">{event.date ? format(new Date(event.date), 'EEE, d MMM yyyy') : '—'}</span>
+                  <span className="text-gray-400">{event.date ? format(new Date(event.date), 'EEE, d MMM yyyy') : 'Coming Soon'}</span>
                   <span className={`font-medium capitalize ${statusColors[event.status] || 'text-gray-400'}`}>{event.status}</span>
                 </div>
               </div>

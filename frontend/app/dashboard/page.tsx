@@ -101,41 +101,37 @@ export default function DashboardPage() {
             <div className="space-y-4">
               {registrations.map((reg) => (
                 <div key={reg.id} className="bg-gray-800 rounded-xl p-6 border border-gray-700 flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white">{reg.events?.title}</h3>
-                    <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-400">
-                      <span>📅 {reg.events?.date ? format(new Date(reg.events.date), 'EEE, d MMM yyyy') : '—'}</span>
-                      <span>📍 {reg.events?.venue || '—'}</span>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">{reg.events?.title}</h3>
+                      <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-400">
+                        <span>📅 {reg.events?.date ? format(new Date(reg.events.date), 'EEE, d MMM yyyy') : 'Coming Soon'}</span>
+                        <span>📍 {reg.events?.venue || '—'}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-xs text-gray-500 mb-1">Checked In</div>
-                      <div className="text-2xl">{reg.checked_in ? '✅' : '❌'}</div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500 mb-1">Checked In</div>
+                        <div className="text-2xl">{reg.checked_in ? '✅' : '❌'}</div>
+                      </div>
+                      <div className="text-center">
+                        {reg.checked_in ? (
+                          <div className="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-green-500/20">
+                            Attended
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2 items-center">
+                            <span className="text-xs text-gray-500 italic block">Attend to unlock</span>
+                            <button
+                              onClick={() => handleCancelRegistration(reg.id, reg.events?.title || 'event')}
+                              disabled={cancellingId === reg.id}
+                              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-1.5 rounded-lg transition-all"
+                            >
+                              {cancellingId === reg.id ? 'Cancelling...' : 'Cancel'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-center">
-                      {reg.checked_in ? (
-                        <button
-                          onClick={() => handleDownloadCertificate(reg.id, reg.events?.title || 'event')}
-                          disabled={downloadingId === reg.id}
-                          className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
-                        >
-                          {downloadingId === reg.id ? 'Downloading...' : '📥 Certificate'}
-                        </button>
-                      ) : (
-                        <div className="flex flex-col gap-2 items-center">
-                          <span className="text-xs text-gray-500 italic block">Attend to unlock</span>
-                          <button
-                            onClick={() => handleCancelRegistration(reg.id, reg.events?.title || 'event')}
-                            disabled={cancellingId === reg.id}
-                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-1.5 rounded-lg transition-all"
-                          >
-                            {cancellingId === reg.id ? 'Cancelling...' : 'Cancel'}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>
