@@ -30,7 +30,7 @@ dist/
 .env.test.local
 .env.production.local
 *.env
-*.env.*
+# Do NOT use *.env.* — it accidentally matches next-env.d.ts
 
 # OS files
 .DS_Store
