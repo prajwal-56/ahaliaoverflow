@@ -21,12 +21,12 @@ export async function getEvent(id: string) {
   return res.json()
 }
 
-export async function registerForEvent(eventId: string) {
+export async function registerForEvent(eventId: string, transactionId?: string) {
   const headers = await authHeaders()
   const res = await fetch(`${API_URL}/registrations/`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ event_id: eventId })
+    body: JSON.stringify({ event_id: eventId, transaction_id: transactionId || null })
   })
   if (!res.ok) {
     const err = await res.json()
@@ -64,7 +64,7 @@ export async function getCertificate(registrationId: string) {
 export async function createEvent(data: {
   title: string, description: string, date?: string,
   venue: string, capacity: number, cover_image_url?: string,
-  host_organizer?: string
+  host_organizer?: string, registration_fee?: number, upi_qr_url?: string
 }) {
   const headers = await authHeaders()
   const res = await fetch(`${API_URL}/events/`, {
@@ -82,7 +82,7 @@ export async function createEvent(data: {
 export async function updateEvent(id: string, data: {
   title?: string, description?: string, date?: string,
   venue?: string, capacity?: number, cover_image_url?: string,
-  host_organizer?: string, status?: string
+  host_organizer?: string, status?: string, registration_fee?: number, upi_qr_url?: string
 }) {
   const headers = await authHeaders()
   const res = await fetch(`${API_URL}/events/${id}`, {
@@ -113,6 +113,9 @@ export async function uploadEventImage(formData: FormData) {
   }
   return res.json()
 }
+
+// Reuses the same upload endpoint — just a semantic alias for UPI QR uploads
+export const uploadUpiQrImage = uploadEventImage
 
 export async function cancelRegistration(registrationId: string) {
   const headers = await authHeaders()

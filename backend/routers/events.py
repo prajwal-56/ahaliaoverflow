@@ -18,6 +18,8 @@ class EventCreate(BaseModel):
     capacity: int
     cover_image_url: Optional[str] = None
     host_organizer: Optional[str] = "independent"
+    registration_fee: Optional[float] = 0.0  # 0 = free
+    upi_qr_url: Optional[str] = None  # UPI QR code image URL
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None
@@ -28,6 +30,8 @@ class EventUpdate(BaseModel):
     cover_image_url: Optional[str] = None
     host_organizer: Optional[str] = None
     status: Optional[str] = None
+    registration_fee: Optional[float] = None
+    upi_qr_url: Optional[str] = None
 
 @router.get("/")
 def list_events(status: Optional[str] = None):
@@ -75,6 +79,8 @@ def create_event(payload: EventCreate, user=Depends(get_organizer_user)):
         "capacity": payload.capacity,
         "cover_image_url": payload.cover_image_url,
         "host_organizer": payload.host_organizer,
+        "registration_fee": payload.registration_fee or 0.0,
+        "upi_qr_url": payload.upi_qr_url,
         "created_by": user.id,
         "status": "upcoming"
     }
@@ -97,6 +103,8 @@ def update_event(event_id: str, payload: EventUpdate, user=Depends(get_organizer
     if payload.cover_image_url is not None: update_data["cover_image_url"] = payload.cover_image_url
     if payload.host_organizer is not None: update_data["host_organizer"] = payload.host_organizer
     if payload.status is not None: update_data["status"] = payload.status
+    if payload.registration_fee is not None: update_data["registration_fee"] = payload.registration_fee
+    if payload.upi_qr_url is not None: update_data["upi_qr_url"] = payload.upi_qr_url
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields provided for update")

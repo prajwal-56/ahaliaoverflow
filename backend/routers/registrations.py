@@ -10,6 +10,7 @@ router = APIRouter()
 
 class RegisterPayload(BaseModel):
     event_id: str
+    transaction_id: str | None = None  # Required for paid events
 
 @router.post("/")
 def register_for_event(payload: RegisterPayload, user=Depends(get_current_user)):
@@ -24,6 +25,17 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
     existing = supabase.table("registrations").select("id").eq("user_id", user.id).eq("event_id", payload.event_id).execute()
     if existing.data:
         raise HTTPException(status_code=400, detail="You are already registered for this event")
+    
+    # Validate transaction_id for paid events
+    registration_fee = event.data.get("registration_fee") or 0
+    if registration_fee > 0:
+        if not payload.transaction_id:
+            raise HTTPException(status_code=400, detail="Transaction ID is required for paid events")
+        # UPI transaction IDs are typically 12+ alphanumeric characters
+        clean_txn = payload.transaction_id.strip()
+        if len(clean_txn) < 12 or not clean_txn.isalnum():
+            raise HTTPException(status_code=400, detail="Invalid Transaction ID. Must be 12+ alphanumeric characters (as shown in your UPI app).")
+    
     profile = supabase.table("users").select("*").eq("id", user.id).single().execute()
     if not profile.data:
         raise HTTPException(status_code=404, detail="User profile not found. Please complete your profile.")
@@ -46,10 +58,16 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
     # Get public URL
     qr_url = supabase.storage.from_("qr-codes").get_public_url(filename)
     
-    reg_data = {"user_id": user.id, "event_id": payload.event_id, "token": token, "checked_in": False}
+    reg_data = {
+        "user_id": user.id,
+        "event_id": payload.event_id,
+        "token": token,
+        "checked_in": False,
+        "transaction_id": payload.transaction_id.strip() if payload.transaction_id else None
+    }
     registration = supabase.table("registrations").insert(reg_data).execute()
     
-    event_date = event.data["date"][:10]
+    event_date = event.data["date"][:10] if event.data.get("date") else "TBA"
     try:
         send_registration_confirmation(
             to=profile.data["email"],
@@ -57,11 +75,14 @@ def register_for_event(payload: RegisterPayload, user=Depends(get_current_user))
             event_title=event.data["title"],
             event_date=event_date,
             qr_url=qr_url,
-            token=token
+            token=token,
+            transaction_id=payload.transaction_id,
+            registration_fee=registration_fee
         )
     except Exception as e:
         print(f"Email failed: {e}")
     return {"message": "Registered successfully. Check your email for the QR code.", "registration_id": registration.data[0]["id"], "token": token}
+
 
 @router.get("/my")
 def my_registrations(user=Depends(get_current_user)):

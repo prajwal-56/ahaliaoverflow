@@ -28,21 +28,33 @@ def send_email(to: str, subject: str, html_body: str, inline_image_path: str = N
         smtp.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
         smtp.sendmail(GMAIL_ADDRESS, to, msg.as_string())
 
-def send_registration_confirmation(to: str, full_name: str, event_title: str, event_date: str, qr_url: str, token: str):
+def send_registration_confirmation(to: str, full_name: str, event_title: str, event_date: str, qr_url: str, token: str, transaction_id: str = None, registration_fee: float = 0):
     subject = f"You're registered for {event_title}!"
+    payment_section = ""
+    if registration_fee and registration_fee > 0:
+        payment_section = f"""
+      <div style="background:#1a1a2e;border:1px solid #4F46E5;border-radius:8px;padding:12px 16px;margin:16px 0;">
+        <p style="margin:0;color:#a5b4fc;font-size:13px;font-weight:600;">💳 Payment Confirmed</p>
+        <p style="margin:4px 0 0;color:#e2e8f0;font-size:13px;">Amount: <strong>₹{registration_fee:.0f}</strong></p>
+        <p style="margin:4px 0 0;color:#e2e8f0;font-size:13px;">Transaction ID: <code style="background:#2d2d2d;padding:2px 6px;border-radius:4px;">{transaction_id}</code></p>
+        <p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">Keep this for your records. Your registration is pending verification by the organizer.</p>
+      </div>
+        """
     html = f"""
-    <html><body style="font-family: sans-serif; max-width: 600px; margin: auto;">
-      <h2>Hey {full_name}, you're in! 🎉</h2>
+    <html><body style="font-family: sans-serif; max-width: 600px; margin: auto; background:#0f0f1a; color:#e2e8f0; padding:24px;">
+      <h2 style="color:#a5b4fc;">Hey {full_name}, you're in! 🎉</h2>
       <p>Your registration for <strong>{event_title}</strong> on <strong>{event_date}</strong> is confirmed.</p>
+      {payment_section}
       <p>Show this QR code at the event entrance for check-in:</p>
-      <img src="{qr_url}" width="200" height="200" alt="QR Code" />
+      <img src="{qr_url}" width="200" height="200" alt="QR Code" style="border-radius:8px;" />
       <p style="color: #888; font-size: 12px;">Token: {token}</p>
       <p>See you there!</p>
-      <hr/>
+      <hr style="border-color:#333;"/>
       <p style="color: #aaa; font-size: 11px;">Ahalia Overflow — Your college's tech community</p>
     </body></html>
     """
     send_email(to, subject, html)
+
 
 def send_certificate_ready(to: str, full_name: str, event_title: str, certificate_url: str):
     subject = f"Your certificate for {event_title} is ready!"
