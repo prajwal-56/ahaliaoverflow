@@ -6,9 +6,19 @@ import os
 
 app = FastAPI(title="Ahalia Overflow API")
 
+# Build allowed origins — filter out None in case env var is not set
+_frontend_url = os.getenv("FRONTEND_URL")
+allowed_origins = list(filter(None, [
+    _frontend_url,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]))
+
+print(f"[CORS] Allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL"), "http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,4 +34,6 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 @app.get("/")
 def root():
-    return {"status": "Ahalia Overflow API is running"}
+    allowed = os.getenv("FRONTEND_URL", "not set")
+    return {"status": "Ahalia Overflow API is running", "cors_frontend_url": allowed}
+
