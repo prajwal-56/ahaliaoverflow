@@ -212,7 +212,7 @@ export default function EventDetailPage() {
               {/* Disclaimer */}
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                 <p className="text-amber-300 text-xs">
-                  ⚠️ Your registration will be <strong>pending verification</strong> until the organizer confirms your payment. You'll still receive a QR ticket, but check-in requires verification.
+                  ⚠️ Your registration will be <strong>pending verification</strong> until the organizer confirms your payment. You&apos;ll still receive a QR ticket, but check-in requires verification.
                 </p>
               </div>
 
@@ -328,7 +328,7 @@ export default function EventDetailPage() {
             <div>
               <div className="text-amber-300 font-semibold text-sm">Paid Event — ₹{event.registration_fee?.toFixed(0)} Registration Fee</div>
               <p className="text-gray-400 text-sm mt-1">
-                This event requires a registration fee. After clicking "Register Now", you'll be shown a UPI QR code to scan and pay. Enter your Transaction ID to complete registration.
+                This event requires a registration fee. After clicking &quot;Register Now&quot;, you&apos;ll be shown a UPI QR code to scan and pay. Enter your Transaction ID to complete registration.
               </p>
             </div>
           </div>
