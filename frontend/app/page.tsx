@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase'
 
 import GlitchText from '@/components/GlitchText'
 import ScrollScatterText from '@/components/ScrollScatterText'
-import ScrollAssembleCards from '@/components/ScrollAssembleCards'
+import ScrollCardStack from '@/components/ScrollCardStack'
 import ScrollParallaxWrapper from '@/components/ScrollParallaxWrapper'
 
 const InteractiveWarp = dynamic(() => import('@/components/InteractiveWarp'), { ssr: false })
@@ -83,22 +83,22 @@ export default function HomePage() {
           </div>
 
           {/* GIANT SCATTERING HEADING */}
-          <div className="mb-6 leading-[0.82] tracking-tight">
+          <div className="mb-6 leading-[0.75]">
             <div className="block">
               {ready && (
                 <ScrollScatterText
                   text="AHALIA"
                   triggerSelector="#hero-section"
-                  className="block text-[13vw] md:text-[11vw] font-bold text-outline select-none tracking-tight font-serif"
+                  className="block text-[14vw] md:text-[12vw] font-black text-outline select-none tracking-[-0.08em] uppercase"
                 />
               )}
             </div>
-            <div className="block mt-2">
+            <div className="block mt-1">
               {ready && (
                 <ScrollScatterText
                   text="OVERFLOW"
                   triggerSelector="#hero-section"
-                  className="block text-[13vw] md:text-[11vw] font-bold glow-neon select-none text-neon tracking-tight font-serif"
+                  className="block text-[14vw] md:text-[12vw] font-black glow-neon select-none text-neon tracking-[-0.08em] uppercase"
                 />
               )}
             </div>
@@ -240,11 +240,11 @@ export default function HomePage() {
           </div>
 
           {upcoming.length > 0 ? (
-            <ScrollAssembleCards>
+            <ScrollCardStack>
               {upcoming.map((event) => (
                 <EventCard key={event.id} {...event} />
               ))}
-            </ScrollAssembleCards>
+            </ScrollCardStack>
           ) : (
             <div className="text-center py-28">
               <div className="font-mono text-6xl mb-4 opacity-20">{'{ }'}</div>
@@ -268,11 +268,11 @@ export default function HomePage() {
                 <span className="block" style={{ WebkitTextStroke: '1.5px #FF2D78', color: 'transparent' }}><GlitchText text="Events." /></span>
               </h2>
             </div>
-            <ScrollAssembleCards>
+            <ScrollCardStack>
               {completed.map((event) => (
                 <EventCard key={event.id} {...event} accent="plasma" />
               ))}
-            </ScrollAssembleCards>
+            </ScrollCardStack>
           </div>
         </section>
       )}

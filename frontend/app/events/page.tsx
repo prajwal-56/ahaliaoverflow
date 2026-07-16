@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { getEvents } from '@/lib/api'
 import EventCard from '@/components/EventCard'
 import TextScramble from '@/components/TextScramble'
+import ScrollCardStack from '@/components/ScrollCardStack'
 
 const InteractiveWarp = dynamic(() => import('@/components/InteractiveWarp'), { ssr: false })
 
@@ -96,11 +97,11 @@ export default function EventsPage() {
             ))}
           </div>
         ) : events.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ScrollCardStack>
             {events.map((event) => (
               <EventCard key={event.id} {...event} accent={event.status === 'completed' ? 'plasma' : 'neon'} />
             ))}
-          </div>
+          </ScrollCardStack>
         ) : (
           <div className="text-center py-32">
             <div className="font-mono text-6xl mb-4 opacity-20">{'{ ? }'}</div>
