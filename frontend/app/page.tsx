@@ -5,11 +5,12 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { getEvents } from '@/lib/api'
 import EventCard from '@/components/EventCard'
-import TextScramble from '@/components/TextScramble'
 import MagneticButton from '@/components/MagneticButton'
 import { supabase } from '@/lib/supabase'
 
 import GlitchText from '@/components/GlitchText'
+import ScrollScatterText from '@/components/ScrollScatterText'
+import ScrollAssembleCards from '@/components/ScrollAssembleCards'
 
 const InteractiveWarp = dynamic(() => import('@/components/InteractiveWarp'), { ssr: false })
 
@@ -58,7 +59,7 @@ export default function HomePage() {
       <InteractiveWarp />
 
       {/* ──────────── HERO ──────────── */}
-      <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
+      <section id="hero-section" className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
 
         {/* void gradient */}
         <div className="absolute inset-0 z-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200,255,0,0.04) 0%, transparent 70%)' }} />
@@ -80,29 +81,25 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* GIANT HEADING */}
-          <div className="mb-6 leading-[0.82] tracking-tight overflow-hidden">
-            <div className="overflow-hidden">
-              <div className="animate-word-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-                {ready && (
-                  <TextScramble
-                    text="AHALIA"
-                    delay={300}
-                    className="block text-[18vw] md:text-[14vw] font-bold text-outline select-none"
-                  />
-                )}
-              </div>
+          {/* GIANT SCATTERING HEADING */}
+          <div className="mb-6 leading-[0.82] tracking-tight">
+            <div className="block">
+              {ready && (
+                <ScrollScatterText
+                  text="AHALIA"
+                  triggerSelector="#hero-section"
+                  className="block text-[13vw] md:text-[11vw] font-bold text-outline select-none tracking-tight font-serif"
+                />
+              )}
             </div>
-            <div className="overflow-hidden">
-              <div className="animate-word-in" style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}>
-                {ready && (
-                  <TextScramble
-                    text="OVERFLOW"
-                    delay={600}
-                    className="block text-[18vw] md:text-[14vw] font-bold glow-neon select-none text-neon"
-                  />
-                )}
-              </div>
+            <div className="block mt-2">
+              {ready && (
+                <ScrollScatterText
+                  text="OVERFLOW"
+                  triggerSelector="#hero-section"
+                  className="block text-[13vw] md:text-[11vw] font-bold glow-neon select-none text-neon tracking-tight font-serif"
+                />
+              )}
             </div>
           </div>
 
@@ -238,15 +235,11 @@ export default function HomePage() {
           </div>
 
           {upcoming.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcoming.map((event, i) => (
-                <div key={event.id}
-                  className={`transition-all duration-700 ${evts.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
-                  style={{ transitionDelay: `${i * 100}ms` }}>
-                  <EventCard {...event} />
-                </div>
+            <ScrollAssembleCards>
+              {upcoming.map((event) => (
+                <EventCard key={event.id} {...event} />
               ))}
-            </div>
+            </ScrollAssembleCards>
           ) : (
             <div className="text-center py-28">
               <div className="font-mono text-6xl mb-4 opacity-20">{'{ }'}</div>
@@ -270,15 +263,11 @@ export default function HomePage() {
                 <span className="block" style={{ WebkitTextStroke: '1.5px #FF2D78', color: 'transparent' }}><GlitchText text="Events." /></span>
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completed.map((event, i) => (
-                <div key={event.id}
-                  className={`transition-all duration-700 ${hist.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
-                  style={{ transitionDelay: `${i * 100}ms` }}>
-                  <EventCard {...event} accent="plasma" />
-                </div>
+            <ScrollAssembleCards>
+              {completed.map((event) => (
+                <EventCard key={event.id} {...event} accent="plasma" />
               ))}
-            </div>
+            </ScrollAssembleCards>
           </div>
         </section>
       )}
