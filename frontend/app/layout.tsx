@@ -16,12 +16,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-950 text-white flex flex-col min-h-screen`}>
+      <body className={`${inter.className} flex flex-col min-h-screen`} style={{ background: '#06000F', color: '#fff' }}>
         <SmoothScroller>
           {/* Custom cursor — renders nothing on touch devices */}
           <CustomCursor />
           <Navbar />
-          <main className="flex-1 pt-16">{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </SmoothScroller>
       </body>

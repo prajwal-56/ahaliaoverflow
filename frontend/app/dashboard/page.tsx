@@ -1,8 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { format } from 'date-fns'
 import { supabase } from '@/lib/supabase'
 import { getMyRegistrations, getCertificate, cancelRegistration } from '@/lib/api'
+import TextScramble from '@/components/TextScramble'
+
+const InteractiveWarp = dynamic(() => import('@/components/InteractiveWarp'), { ssr: false })
 
 interface Registration {
   id: string
@@ -18,8 +22,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    setReady(true)
     supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setUser(data.user)
@@ -69,69 +75,94 @@ export default function DashboardPage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <div className="w-12 h-12 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen bg-void flex items-center justify-center">
+      <div className="w-10 h-10 border border-t-transparent rounded-full animate-spin" style={{ borderColor: '#C8FF00' }} />
     </div>
   )
 
   const displayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there'
 
   return (
-    <div className="min-h-screen bg-gray-950 px-4 py-16">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
+    <div className="min-h-screen relative px-4 py-28 noise" style={{ background: '#06000F' }}>
+      <InteractiveWarp />
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 p-6 rounded-2xl border"
+          style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
           <div>
-            <h1 className="text-4xl font-bold text-white">Hey {displayName} 👋</h1>
-            <p className="text-gray-400 mt-2">{user?.email}</p>
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white flex items-center gap-3">
+              Hey <span style={{ color: '#C8FF00' }}>{displayName}</span> 👋
+            </h1>
+            <p className="font-mono text-xs uppercase mt-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{user?.email}</p>
           </div>
-          <button onClick={handleSignOut} className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-all duration-200 border border-gray-700">
+          <button
+            onClick={handleSignOut}
+            className="font-mono text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all duration-300"
+            style={{ border: '1px solid rgba(255,45,120,0.3)', color: '#FF2D78', background: 'rgba(255,45,120,0.05)' }}
+          >
             Sign Out
           </button>
         </div>
+
+        {/* Registrations list */}
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-6">My Registrations</h2>
+          <h2 className="text-xl md:text-2xl font-bold font-mono uppercase tracking-wider text-white mb-8">
+            {ready ? <TextScramble text="MY REGISTRATIONS" delay={150} /> : 'MY REGISTRATIONS'}
+          </h2>
+
           {registrations.length === 0 ? (
-            <div className="bg-gray-800 rounded-2xl p-12 border border-gray-700 text-center">
-              <div className="text-5xl mb-4">🎟️</div>
-              <p className="text-xl text-gray-400">No registrations yet</p>
-              <p className="text-gray-600 mt-2">Register for an event to see it here</p>
-              <a href="/events" className="inline-block mt-6 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-all">Browse Events</a>
+            <div className="rounded-2xl p-16 text-center border"
+              style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
+              <div className="font-mono text-6xl mb-6 opacity-25">🎟️</div>
+              <p className="font-mono text-sm text-gray-500 uppercase tracking-widest">No registrations yet</p>
+              <a href="/events" className="inline-block mt-8 font-mono text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-xl text-black transition-all"
+                style={{ background: '#C8FF00', boxShadow: '0 0 20px rgba(200,255,0,0.2)' }}>
+                Browse Events
+              </a>
             </div>
           ) : (
             <div className="space-y-4">
               {registrations.map((reg) => (
-                <div key={reg.id} className="bg-gray-800 rounded-xl p-6 border border-gray-700 flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white">{reg.events?.title}</h3>
-                      <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-400">
-                        <span>📅 {reg.events?.date ? format(new Date(reg.events.date), 'EEE, d MMM yyyy') : 'Coming Soon'}</span>
-                        <span>📍 {reg.events?.venue || '—'}</span>
-                      </div>
+                <div
+                  key={reg.id}
+                  className="rounded-2xl p-6 border flex flex-col md:flex-row md:items-center gap-6"
+                  style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}
+                >
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-white">{reg.events?.title}</h3>
+                    <div className="flex flex-wrap gap-4 mt-2 font-mono text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                      <span>◷ {reg.events?.date ? format(new Date(reg.events.date), 'EEE, d MMM yyyy') : 'Coming Soon'}</span>
+                      <span>◈ {reg.events?.venue || '—'}</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-center">
-                        <div className="text-xs text-gray-500 mb-1">Checked In</div>
-                        <div className="text-2xl">{reg.checked_in ? '✅' : '❌'}</div>
-                      </div>
-                      <div className="text-center">
-                        {reg.checked_in ? (
-                          <div className="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-green-500/20">
-                            Attended
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-2 items-center">
-                            <span className="text-xs text-gray-500 italic block">Attend to unlock</span>
-                            <button
-                              onClick={() => handleCancelRegistration(reg.id, reg.events?.title || 'event')}
-                              disabled={cancellingId === reg.id}
-                              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs px-3 py-1.5 rounded-lg transition-all"
-                            >
-                              {cancellingId === reg.id ? 'Cancelling...' : 'Cancel'}
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                    <div className="text-center font-mono">
+                      <div className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Checked In</div>
+                      <div className="text-xl mt-1">{reg.checked_in ? '🟢' : '⚫'}</div>
                     </div>
+
+                    <div>
+                      {reg.checked_in ? (
+                        <div className="font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-xl"
+                          style={{ background: 'rgba(0,229,255,0.05)', border: '1px solid rgba(0,229,255,0.3)', color: '#00E5FF' }}>
+                          Attended
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-2 items-end">
+                          <button
+                            onClick={() => handleCancelRegistration(reg.id, reg.events?.title || 'event')}
+                            disabled={cancellingId === reg.id}
+                            className="font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-xl transition-all"
+                            style={{ border: '1px solid rgba(255,45,120,0.3)', color: '#FF2D78', background: 'rgba(255,45,120,0.05)' }}
+                          >
+                            {cancellingId === reg.id ? '...' : 'Cancel'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

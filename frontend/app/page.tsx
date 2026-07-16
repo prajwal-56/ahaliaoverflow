@@ -2,320 +2,280 @@
 import { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { getEvents } from '@/lib/api'
 import EventCard from '@/components/EventCard'
+import TextScramble from '@/components/TextScramble'
+import MagneticButton from '@/components/MagneticButton'
 import { supabase } from '@/lib/supabase'
 
+import GlitchText from '@/components/GlitchText'
+
+const InteractiveWarp = dynamic(() => import('@/components/InteractiveWarp'), { ssr: false })
+
 interface Event {
-  id: string
-  title: string
-  description: string
-  date: string
-  venue: string
-  status: string
-  cover_image_url: string | null
-  capacity: number
+  id: string; title: string; description: string
+  date: string; venue: string; status: string
+  cover_image_url: string | null; capacity: number
 }
 
-// Hook: trigger animation when element enters viewport
-function useReveal(threshold = 0.15) {
+function useReveal(threshold = 0.12) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); obs.disconnect() }
-    }, { threshold })
+    const el = ref.current; if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold })
     obs.observe(el)
     return () => obs.disconnect()
   }, [threshold])
   return { ref, visible }
 }
 
-// Animated word split component
-function AnimatedHeading({ text, className }: { text: string; className?: string }) {
-  const words = text.split(' ')
-  return (
-    <span className={className}>
-      {words.map((word, wi) => (
-        <span key={wi} className="inline-block overflow-hidden mr-[0.25em]">
-          <span
-            className="inline-block animate-word-in"
-            style={{ animationDelay: `${wi * 0.12}s`, animationFillMode: 'backwards' }}
-          >
-            {word}
-          </span>
-        </span>
-      ))}
-    </span>
-  )
-}
-
-// Parallax orb that moves on scroll
-function ParallaxOrb({ className, speed = 0.3 }: { className: string; speed?: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const onScroll = () => {
-      const y = window.scrollY * speed
-      el.style.transform = `translateY(${y}px)`
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [speed])
-  return <div ref={ref} className={className} />
-}
+const MARQUEE_TEXT = 'STAY CURIOUS — BREAK THINGS — TINKER HARD — LEARN FAST — SHOW UP — '
 
 export default function HomePage() {
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
-  const [completedEvents, setCompletedEvents] = useState<Event[]>([])
+  const [upcoming, setUpcoming] = useState<Event[]>([])
+  const [completed, setCompleted] = useState<Event[]>([])
   const [user, setUser] = useState<any>(null)
-  const [heroReady, setHeroReady] = useState(false)
+  const [ready, setReady] = useState(false)
 
   const about = useReveal()
-  const eventsSection = useReveal(0.1)
-  const historySection = useReveal(0.1)
-  const ctaSection = useReveal(0.2)
+  const evts = useReveal(0.08)
+  const hist = useReveal(0.08)
+  const cta = useReveal(0.2)
 
   useEffect(() => {
-    getEvents('upcoming').then((data) => setUpcomingEvents(Array.isArray(data) ? data.slice(0, 3) : []))
-    getEvents('completed').then((data) => setCompletedEvents(Array.isArray(data) ? data.slice(0, 3) : []))
+    getEvents('upcoming').then(d => setUpcoming(Array.isArray(d) ? d.slice(0, 3) : []))
+    getEvents('completed').then(d => setCompleted(Array.isArray(d) ? d.slice(0, 3) : []))
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
-    // Slight delay so hero appears to "load in"
-    const t = setTimeout(() => setHeroReady(true), 100)
-    return () => clearTimeout(t)
+    setTimeout(() => setReady(true), 80)
   }, [])
 
   return (
-    <div className="flex flex-col" style={{ cursor: 'none' }}>
+    <div className="flex flex-col noise">
+
+      {/* ── WARP SPEED BG ── */}
+      <InteractiveWarp />
 
       {/* ──────────── HERO ──────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600"
-            alt="Technology background"
-            fill
-            className="object-cover opacity-10"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-indigo-950/70 to-gray-950" />
-        </div>
+      <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
 
-        {/* Grid overlay */}
-        <div className="absolute inset-0 z-0 opacity-[0.03]" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)',
-          backgroundSize: '60px 60px'
-        }} />
+        {/* void gradient */}
+        <div className="absolute inset-0 z-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200,255,0,0.04) 0%, transparent 70%)' }} />
 
-        {/* Parallax orbs */}
-        <ParallaxOrb
-          speed={0.25}
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"
-        />
-        <ParallaxOrb
-          speed={0.15}
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px]"
-        />
-        <ParallaxOrb
-          speed={0.4}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cyan-600/5 rounded-full blur-[150px]"
-        />
+        {/* Big ambient glows */}
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(200,255,0,0.07) 0%, transparent 70%)', animation: 'glow-pulse 4s ease-in-out infinite' }} />
+        <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(255,45,120,0.06) 0%, transparent 70%)', animation: 'glow-pulse 5s ease-in-out infinite 1.5s' }} />
 
-        {/* Hero content */}
-        <div className={`relative z-10 text-center px-4 max-w-5xl mx-auto transition-all duration-1000 ${heroReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          {/* Badge */}
-          <div className={`inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-2 mb-10 text-indigo-300 text-sm font-medium backdrop-blur-sm transition-all duration-700 delay-200 ${heroReady ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-            <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
-            Your College Tech Community
+        <div className={`relative z-10 text-center px-4 max-w-7xl mx-auto w-full transition-all duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+
+          {/* Eyebrow */}
+          <div className="animate-fade-up mb-8" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
+            <span className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-mono font-semibold uppercase tracking-[0.2em]"
+              style={{ border: '1px solid rgba(200,255,0,0.25)', background: 'rgba(200,255,0,0.05)', color: '#C8FF00' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8FF00] animate-ping-slow" />
+              Your College Tech Community
+            </span>
           </div>
 
-          <h1 className="font-serif text-7xl md:text-9xl font-bold text-white mb-6 leading-[0.9] tracking-tight">
-            {heroReady && (
-              <>
-                <AnimatedHeading text="Ahalia" className="block" />
-                <span className="block overflow-hidden">
-                  <span
-                    className="block animate-word-in text-transparent bg-clip-text"
-                    style={{
-                      backgroundImage: 'linear-gradient(135deg, #818cf8, #c084fc, #67e8f9)',
-                      animationDelay: '0.18s',
-                      animationFillMode: 'backwards'
-                    }}
-                  >
-                    Overflow
-                  </span>
-                </span>
-              </>
-            )}
-          </h1>
+          {/* GIANT HEADING */}
+          <div className="mb-6 leading-[0.82] tracking-tight overflow-hidden">
+            <div className="overflow-hidden">
+              <div className="animate-word-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
+                {ready && (
+                  <TextScramble
+                    text="AHALIA"
+                    delay={300}
+                    className="block text-[18vw] md:text-[14vw] font-bold text-outline select-none"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="overflow-hidden">
+              <div className="animate-word-in" style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}>
+                {ready && (
+                  <TextScramble
+                    text="OVERFLOW"
+                    delay={600}
+                    className="block text-[18vw] md:text-[14vw] font-bold glow-neon select-none text-neon"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
 
-          <p className={`text-xl md:text-2xl text-indigo-300/80 font-mono mb-12 max-w-2xl mx-auto leading-relaxed transition-all duration-700 delay-500 ${heroReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            &gt; stay Curious. Break.{' '}
-            <a href="https://www.instagram.com/tinkerhub.aset" className="text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-4 decoration-indigo-500/40">
-              Tinker.
-            </a>{' '}
-            Learn.
+          {/* Tagline */}
+          <p className="animate-fade-up font-mono text-sm md:text-base text-gray-500 mb-14 tracking-[0.15em] uppercase"
+            style={{ animationDelay: '0.8s', animationFillMode: 'backwards' }}>
+            &gt;_ stay curious. break. tinker.{' '}
+            <a href="https://www.instagram.com/tinkerhub.aset" className="text-[#C8FF00] hover:text-white transition-colors" style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '4px' }}>
+              learn.
+            </a>
           </p>
 
-          <div className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-700 delay-700 ${heroReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <Link href="/events" className="group relative bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/30 overflow-hidden">
-              <span className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative">Explore Events →</span>
-            </Link>
-            {user ? (
-              <Link href="/dashboard" className="border border-indigo-500/40 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-indigo-500/10 backdrop-blur-sm">
-                Go to Dashboard
-              </Link>
-            ) : (
-              <Link href="/auth/signup" className="border border-indigo-500/40 hover:border-indigo-400 text-indigo-300 hover:text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-indigo-500/10 backdrop-blur-sm">
-                Join the Overflow
-              </Link>
-            )}
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center animate-fade-up"
+            style={{ animationDelay: '1s', animationFillMode: 'backwards' }}>
+            <MagneticButton href="/events">
+              <span className="inline-flex items-center gap-2 font-bold text-black px-8 py-4 rounded-xl text-sm tracking-wider uppercase transition-all duration-200 hover:scale-105"
+                style={{ background: '#C8FF00', boxShadow: '0 0 30px rgba(200,255,0,0.4), 0 0 60px rgba(200,255,0,0.15)' }}>
+                Explore Events
+                <span style={{ fontSize: '1.1em' }}>→</span>
+              </span>
+            </MagneticButton>
+
+            <MagneticButton href={user ? '/dashboard' : '/auth/signup'}>
+              <span className="inline-flex items-center gap-2 font-semibold text-white px-8 py-4 rounded-xl text-sm tracking-wider uppercase transition-all duration-200 hover:scale-105"
+                style={{ border: '1px solid rgba(200,255,0,0.3)', background: 'rgba(200,255,0,0.05)', backdropFilter: 'blur(10px)' }}>
+                {user ? 'Dashboard' : 'Join the Overflow'}
+              </span>
+            </MagneticButton>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-700 delay-1000 ${heroReady ? 'opacity-100' : 'opacity-0'}`}>
-          <span className="text-xs text-gray-500 uppercase tracking-widest font-mono">Scroll</span>
-          <div className="w-px h-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-indigo-400 to-transparent animate-scroll-line" />
+        {/* Scroll line */}
+        <div className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-10 transition-all duration-700 delay-[1200ms] ${ready ? 'opacity-100' : 'opacity-0'}`}>
+          <span className="font-mono text-[10px] tracking-[0.35em] uppercase" style={{ color: 'rgba(200,255,0,0.5)' }}>scroll</span>
+          <div className="w-px h-12 overflow-hidden">
+            <div className="w-full h-full animate-scroll-line" style={{ background: 'linear-gradient(to bottom, #C8FF00, transparent)' }} />
           </div>
         </div>
       </section>
 
-      {/* ──────────── ABOUT ──────────── */}
-      <section className="py-32 px-4 bg-gray-900 relative overflow-hidden" id="about">
-        {/* Decorative blobs */}
-        <div className="absolute -right-40 top-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+      {/* ──────────── MARQUEE ──────────── */}
+      <div className="relative overflow-hidden py-5 border-y" style={{ borderColor: 'rgba(200,255,0,0.1)', background: 'rgba(200,255,0,0.03)' }}>
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[...Array(3)].map((_, i) => (
+            <span key={i} className="inline-flex items-center gap-8 mr-8 font-mono text-sm font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(200,255,0,0.45)' }}>
+              {MARQUEE_TEXT.split('—').map((t, j) => (
+                <span key={j} className="inline-flex items-center gap-8">
+                  {t.trim() && <span>{t.trim()}</span>}
+                  {t.trim() && <span style={{ color: 'rgba(200,255,0,0.2)' }}>◆</span>}
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
+      </div>
 
-        <div
-          ref={about.ref}
-          className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center transition-all duration-1000 ${about.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
-        >
+      {/* ──────────── ABOUT ──────────── */}
+      <section className="py-36 px-4 relative overflow-hidden" id="about" style={{ background: 'rgba(6,0,15,0.8)' }}>
+        <div ref={about.ref} className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center transition-all duration-1000 ${about.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
+
+          {/* Text side */}
           <div>
-            <div className="inline-block text-indigo-400 text-xs font-semibold uppercase tracking-[0.3em] mb-6 border border-indigo-500/30 rounded-full px-4 py-1.5 bg-indigo-500/5">
-              About Us
+            <div className="font-mono text-xs uppercase tracking-[0.3em] mb-6" style={{ color: 'rgba(200,255,0,0.7)' }}>
+              01 / About
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-8 leading-tight">
-              Who <br />
-              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #818cf8, #c084fc)' }}>
-                We Are
-              </span>
+            <h2 className="font-bold mb-8 leading-[0.9] tracking-tight" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)' }}>
+              <span className="block text-white"><GlitchText text="Who" /></span>
+              <span className="block text-outline-neon"><GlitchText text="We Are." /></span>
             </h2>
-            <p className="text-gray-300 text-lg leading-relaxed mb-5">
-              Ahalia Overflow isn&apos;t a formal club. There&apos;s no structure or hierarchies. It&apos;s just a collection of raw and unfiltered versions of students who are inherently curious or want to be.
-            </p>
-            <p className="text-gray-400 leading-relaxed mb-4">
-              It&apos;s made by people who want to do nerdy stuff for the people who want to do nerdy stuff.
-            </p>
-            <p className="text-gray-400 leading-relaxed">
-              There are no commitments or requirements — just show up.
-            </p>
-            <div className="flex gap-4 mt-10">
-              <Link href="/events" className="group inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-                View our events
-                <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+            <div className="space-y-5 text-gray-400 text-lg leading-relaxed max-w-md">
+              <p>Ahalia Overflow isn&apos;t a formal club. There&apos;s no structure or hierarchies.</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)' }}>Just raw, unfiltered students who are inherently curious — or want to be.</p>
+              <p>No commitments. No requirements.</p>
+              <p className="font-semibold" style={{ color: '#C8FF00' }}>Just show up.</p>
+            </div>
+            <div className="mt-10">
+              <Link href="/events" className="group inline-flex items-center gap-3 font-mono text-sm uppercase tracking-widest transition-colors" style={{ color: 'rgba(200,255,0,0.7)' }}>
+                <span className="w-8 h-px bg-current group-hover:w-16 transition-all duration-300" />
+                View events
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
             </div>
           </div>
 
-          <div
-            className={`relative transition-all duration-1000 delay-300 ${about.visible ? 'opacity-100 translate-x-0 rotate-0' : 'opacity-0 translate-x-12 rotate-2'}`}
-          >
-            {/* Floating frame effect */}
-            <div className="absolute -inset-4 bg-gradient-to-br from-indigo-600/20 via-purple-600/10 to-transparent rounded-3xl blur-2xl animate-pulse" />
-            <div className="absolute -top-3 -right-3 w-24 h-24 border-2 border-indigo-500/30 rounded-2xl" />
-            <div className="absolute -bottom-3 -left-3 w-16 h-16 border border-purple-500/30 rounded-xl" />
-            <Image
-              src="/richard_feynnman.jpg"
-              alt="Study hard what interests you the most"
-              width={600}
-              height={400}
-              className="relative rounded-2xl object-cover w-full border border-gray-700/50 shadow-2xl"
-            />
+          {/* Image side */}
+          <div className={`relative transition-all duration-1000 delay-300 ${about.visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-16'}`}>
+            {/* Rotating neon ring behind image */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[110%] h-[110%] rounded-2xl border opacity-20 animate-spin-slow"
+                style={{ borderColor: '#C8FF00', transformOrigin: 'center', position: 'absolute' }} />
+            </div>
+            <div className="relative rounded-2xl overflow-hidden"
+              style={{ border: '1px solid rgba(200,255,0,0.15)', boxShadow: '0 0 60px rgba(200,255,0,0.08)' }}>
+              <Image
+                src="/richard_feynnman.jpg"
+                alt="Richard Feynman"
+                width={600} height={420}
+                className="w-full object-cover"
+              />
+              {/* Green tint overlay */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(200,255,0,0.08) 0%, transparent 60%)' }} />
+            </div>
+            {/* Floating badge */}
+            <div className="absolute -bottom-5 -right-5 px-4 py-3 rounded-xl font-mono text-xs" style={{ background: '#C8FF00', color: '#000' }}>
+              <div className="font-bold">NERD ZONE</div>
+              <div className="opacity-70">always open</div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ──────────── UPCOMING EVENTS ──────────── */}
-      <section className="py-32 px-4 bg-gray-950 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
+      <section className="py-36 px-4 relative" style={{ background: 'rgba(0,0,0,0.7)' }}>
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(200,255,0,0.2), transparent)' }} />
 
-        <div
-          ref={eventsSection.ref}
-          className={`max-w-6xl mx-auto transition-all duration-1000 ${eventsSection.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
-        >
-          <div className="flex items-end justify-between mb-16">
+        <div ref={evts.ref} className={`max-w-6xl mx-auto transition-all duration-1000 ${evts.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
+          {/* Header */}
+          <div className="flex items-end justify-between mb-20">
             <div>
-              <div className="inline-block text-indigo-400 text-xs font-semibold uppercase tracking-[0.3em] mb-5 border border-indigo-500/30 rounded-full px-4 py-1.5 bg-indigo-500/5">
-                Events
+              <div className="font-mono text-xs uppercase tracking-[0.3em] mb-5" style={{ color: 'rgba(200,255,0,0.7)' }}>
+                02 / Events
               </div>
-              <h2 className="text-5xl md:text-6xl font-bold text-white">
-                What&apos;s{' '}
-                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #818cf8, #67e8f9)' }}>
-                  Coming
-                </span>
+              <h2 className="font-bold leading-[0.9] tracking-tight" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)' }}>
+                <span className="block text-white"><GlitchText text="What's" /></span>
+                <span className="block text-outline"><GlitchText text="Coming." /></span>
               </h2>
             </div>
-            <Link href="/events" className="group hidden md:inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-              See all
-              <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+            <Link href="/events" className="group hidden md:inline-flex items-center gap-3 font-mono text-sm uppercase tracking-widest transition-colors" style={{ color: 'rgba(200,255,0,0.6)' }}>
+              All events
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
           </div>
 
-          {upcomingEvents.length > 0 ? (
+          {upcoming.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event, i) => (
-                <div
-                  key={event.id}
-                  className={`transition-all duration-700 ${eventsSection.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
-                >
+              {upcoming.map((event, i) => (
+                <div key={event.id}
+                  className={`transition-all duration-700 ${evts.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
+                  style={{ transitionDelay: `${i * 100}ms` }}>
                   <EventCard {...event} />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 text-gray-600">
-              <div className="text-6xl mb-4 opacity-50">📅</div>
-              <p className="text-xl text-gray-500">No upcoming events right now.</p>
-              <p className="text-gray-600 mt-2 text-sm">Check back soon!</p>
+            <div className="text-center py-28">
+              <div className="font-mono text-6xl mb-4 opacity-20">{'{ }'}</div>
+              <p className="font-mono text-gray-600 uppercase tracking-widest text-sm">No upcoming events</p>
             </div>
           )}
         </div>
       </section>
 
       {/* ──────────── PAST EVENTS ──────────── */}
-      {completedEvents.length > 0 && (
-        <section className="py-32 px-4 bg-gray-900 relative">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
-          <div
-            ref={historySection.ref}
-            className={`max-w-6xl mx-auto transition-all duration-1000 ${historySection.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
-          >
-            <div className="mb-16">
-              <div className="inline-block text-purple-400 text-xs font-semibold uppercase tracking-[0.3em] mb-5 border border-purple-500/30 rounded-full px-4 py-1.5 bg-purple-500/5">
-                History
+      {completed.length > 0 && (
+        <section className="py-36 px-4 relative" style={{ background: 'rgba(6,0,15,0.9)' }}>
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(255,45,120,0.2), transparent)' }} />
+          <div ref={hist.ref} className={`max-w-6xl mx-auto transition-all duration-1000 ${hist.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
+            <div className="mb-20">
+              <div className="font-mono text-xs uppercase tracking-[0.3em] mb-5" style={{ color: 'rgba(255,45,120,0.7)' }}>
+                03 / History
               </div>
-              <h2 className="text-5xl md:text-6xl font-bold text-white">
-                Our{' '}
-                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #c084fc, #818cf8)' }}>
-                  Events
-                </span>
+              <h2 className="font-bold leading-[0.9] tracking-tight" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)' }}>
+                <span className="block text-white"><GlitchText text="Our" /></span>
+                <span className="block" style={{ WebkitTextStroke: '1.5px #FF2D78', color: 'transparent' }}><GlitchText text="Events." /></span>
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completedEvents.map((event, i) => (
-                <div
-                  key={event.id}
-                  className={`transition-all duration-700 ${historySection.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
-                >
-                  <EventCard {...event} />
+              {completed.map((event, i) => (
+                <div key={event.id}
+                  className={`transition-all duration-700 ${hist.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}
+                  style={{ transitionDelay: `${i * 100}ms` }}>
+                  <EventCard {...event} accent="plasma" />
                 </div>
               ))}
             </div>
@@ -324,37 +284,33 @@ export default function HomePage() {
       )}
 
       {/* ──────────── CTA ──────────── */}
-      <section className="py-40 px-4 relative overflow-hidden">
-        {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-indigo-950/50 to-purple-950/30" />
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(ellipse at 50% 50%, rgba(99,102,241,0.08) 0%, transparent 70%)'
-        }} />
-        {/* Animated ring */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-indigo-500/10 rounded-full animate-spin-slow pointer-events-none" />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-purple-500/10 rounded-full animate-spin-slower pointer-events-none" />
+      <section className="py-48 px-4 relative overflow-hidden" style={{ background: '#000' }}>
+        {/* Spinning rings */}
+        <div className="absolute left-1/2 top-1/2 w-[700px] h-[700px] rounded-full border animate-spin-slow pointer-events-none"
+          style={{ borderColor: 'rgba(200,255,0,0.06)', transform: 'translate(-50%, -50%) rotate(0deg)' }} />
+        <div className="absolute left-1/2 top-1/2 w-[500px] h-[500px] rounded-full border animate-spin-slower pointer-events-none"
+          style={{ borderColor: 'rgba(255,45,120,0.08)', transform: 'translate(-50%, -50%) rotate(0deg)' }} />
+        <div className="absolute left-1/2 top-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(200,255,0,0.07) 0%, transparent 70%)', transform: 'translate(-50%, -50%)', animation: 'glow-pulse 3s ease-in-out infinite' }} />
 
-        <div
-          ref={ctaSection.ref}
-          className={`relative max-w-3xl mx-auto text-center transition-all duration-1000 ${ctaSection.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
-        >
-          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Ready to{' '}
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #818cf8, #c084fc, #67e8f9)' }}>
-              join?
-            </span>
+        <div ref={cta.ref} className={`relative max-w-4xl mx-auto text-center transition-all duration-1000 ${cta.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className="font-mono text-xs uppercase tracking-[0.3em] mb-8" style={{ color: 'rgba(200,255,0,0.6)' }}>
+            04 / Join
+          </div>
+          <h2 className="font-bold mb-8 leading-[0.85] tracking-tight" style={{ fontSize: 'clamp(4rem, 9vw, 9rem)' }}>
+            <span className="block text-white">Ready</span>
+            <span className="block text-outline-neon animate-flicker">to join?</span>
           </h2>
-          <p className="text-gray-400 text-xl mb-12 leading-relaxed">
+          <p className="font-mono text-gray-500 uppercase tracking-[0.2em] text-sm mb-16">
             Signup and Stay Tuned — Or just show up.
           </p>
-          <Link
-            href="/events"
-            className="group relative inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-12 py-5 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/40 text-lg overflow-hidden"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="relative">View Events</span>
-            <span className="relative inline-block transition-transform group-hover:translate-x-1">→</span>
-          </Link>
+          <MagneticButton href="/events" strength={0.25}>
+            <span className="inline-flex items-center gap-3 font-bold text-black px-12 py-5 rounded-2xl text-base tracking-widest uppercase transition-all duration-200 hover:scale-105"
+              style={{ background: '#C8FF00', boxShadow: '0 0 50px rgba(200,255,0,0.5), 0 0 100px rgba(200,255,0,0.2)' }}>
+              View Events
+              <span>→</span>
+            </span>
+          </MagneticButton>
         </div>
       </section>
     </div>

@@ -68,34 +68,31 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Dot — snaps to cursor */}
+      {/* Dot */}
       <div
         ref={cursorDotRef}
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 pointer-events-none z-[9999]"
         style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          background: 'white',
+          width: 6, height: 6, borderRadius: '50%',
+          background: '#C8FF00',
+          boxShadow: '0 0 8px #C8FF00, 0 0 20px rgba(200,255,0,0.5)',
           opacity: isVisible ? 1 : 0,
           transition: 'opacity 0.3s',
           willChange: 'transform',
         }}
       />
-      {/* Ring — lags behind */}
+      {/* Ring */}
       <div
         ref={cursorRingRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999]"
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: '50%',
-          border: `1.5px solid ${isHovering ? 'rgb(129 140 248)' : 'rgba(255,255,255,0.5)'}`,
+          width: 36, height: 36, borderRadius: '50%',
+          border: `1px solid ${isHovering ? '#C8FF00' : 'rgba(200,255,0,0.4)'}`,
           opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.3s, border-color 0.2s, width 0.2s, height 0.2s',
+          transition: 'opacity 0.3s, border-color 0.2s',
           transform: isHovering ? 'scale(1.6)' : 'scale(1)',
           willChange: 'transform',
-          boxShadow: isHovering ? '0 0 12px 2px rgba(99,102,241,0.4)' : 'none',
+          boxShadow: isHovering ? '0 0 14px rgba(200,255,0,0.5)' : 'none',
         }}
       />
     </>
