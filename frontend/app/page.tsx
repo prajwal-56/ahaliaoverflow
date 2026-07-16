@@ -131,22 +131,13 @@ export default function HomePage() {
                 />
               )}
             </div>
-            <div className="block mt-1 flex justify-center items-baseline">
+            <div className="block mt-1">
               {ready && (
-                <>
-                  <ScrollScatterText
-                    text="OVERFLO"
-                    triggerSelector="#hero-section"
-                    className="block text-[14vw] md:text-[12vw] font-black glow-neon select-none text-neon tracking-[-0.08em] uppercase"
-                  />
-                  {/* Tilted, sagged W that looks like it fell due to overflow */}
-                  <span
-                    className="inline-block origin-top-left rotate-[34deg] translate-y-[2.8vw] -translate-x-[1.8vw] text-neon glow-neon font-black text-[14vw] md:text-[12vw] select-none tracking-[-0.08em] uppercase animate-float"
-                    style={{ animationDuration: '3.5s' }}
-                  >
-                    W
-                  </span>
-                </>
+                <ScrollScatterText
+                  text="OVERFLOW"
+                  triggerSelector="#hero-section"
+                  className="block text-[14vw] md:text-[12vw] font-black glow-neon select-none text-neon tracking-[-0.08em] uppercase"
+                />
               )}
             </div>
           </div>
