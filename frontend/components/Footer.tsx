@@ -3,11 +3,14 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
 const COMMAND_RESPONSES: Record<string, string> = {
-  '/help': 'AVAILABLE COMMANDS: /about, /events, /tinker, /ping, /clear',
+  '/help': 'AVAILABLE COMMANDS: /about, /events, /tinker, /ping, /prajwal, /donate, /organize, /clear',
   '/about': 'AHALIA OVERFLOW: A COLLECTIVE OF RAW NERDS. BREAK, TINKER, LEARN.',
   '/events': 'UPCOMING: DEV WORKSHOPS, RETRO GAME HACKATHONS. CHECK ALL EVENTS PAGE.',
   '/tinker': 'SYSTEM OVERFLOW STATUS: 100% CAPACITY. CURRENT TEMPERATURE: IDEAL.',
   '/ping': 'PONG! SYSTEM LATENCY: 9MS. YOU ARE ONLINE.',
+  '/prajwal': 'CREATOR: PRAJWAL (PORTFOLIO: https://prajwal-56.github.io)',
+  '/donate': 'SUPPORT THE DEVELOPER: https://prajwal-56.github.io/donate',
+  '/organize': 'WANT TO ORGANIZE EVENTS? EMAIL DETAILS TO prawmathean@proton.me FOR ACCESS.',
 }
 
 export default function Footer() {
@@ -18,7 +21,13 @@ export default function Footer() {
   ])
   const terminalEndRef = useRef<HTMLDivElement>(null)
 
+  const isInitialMount = useRef(true)
+
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [terminalLines])
 
@@ -60,7 +69,11 @@ export default function Footer() {
             <span className="text-[#C8FF00] animate-pulse">⚡</span> AHALIA <span className="text-[#C8FF00]">OVERFLOW</span>
           </div>
           <p className="text-gray-500 text-xs uppercase tracking-wider leading-relaxed max-w-sm">
-            stay curious. break. tinker. learn. no rules, just code.
+            stay curious. break.{' '}
+            <a href="https://instagram.com/tinkerhub.aset" target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:underline underline-offset-2">
+              tinker
+            </a>
+            . learn. no rules, just code.
           </p>
 
           <div className="flex gap-3">

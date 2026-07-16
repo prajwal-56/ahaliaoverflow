@@ -60,8 +60,13 @@ export default function EventDetailPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
-    getEvent(id).then((data) => { setEvent(data); setLoading(false) })
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    getEvent(id)
+      .then((data) => { setEvent(data); setLoading(false) })
+      .catch((err) => {
+        console.error("Failed to load event details:", err)
+        setLoading(false)
+      })
+    supabase.auth.getUser().then(({ data }) => setUser(data.user)).catch(() => {})
   }, [id])
 
   const showToast = (message: string, type: 'success' | 'error') => {

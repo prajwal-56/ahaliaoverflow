@@ -36,6 +36,10 @@ export default function EventsPage() {
     const status = filter === 'all' ? undefined : filter
     getEvents(status)
       .then((data) => setEvents(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.error("Failed to load events:", err)
+        setEvents([])
+      })
       .finally(() => setLoading(false))
   }, [filter])
 

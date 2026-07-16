@@ -46,15 +46,49 @@ export default function HomePage() {
   const hist = useReveal(0.08)
   const cta = useReveal(0.2)
 
+  const heroRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
-    getEvents('upcoming').then(d => setUpcoming(Array.isArray(d) ? d.slice(0, 3) : []))
-    getEvents('completed').then(d => setCompleted(Array.isArray(d) ? d.slice(0, 3) : []))
+    getEvents('upcoming')
+      .then(d => setUpcoming(Array.isArray(d) ? d.slice(0, 3) : []))
+      .catch(err => console.error("Error loading upcoming events:", err))
+    getEvents('completed')
+      .then(d => setCompleted(Array.isArray(d) ? d.slice(0, 3) : []))
+      .catch(err => console.error("Error loading completed events:", err))
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
     setTimeout(() => setReady(true), 80)
   }, [])
 
+  // Mouse move perspective tilt for Hero section
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero || window.matchMedia('(pointer: coarse)').matches) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const w = window.innerWidth
+      const h = window.innerHeight
+      const nx = (e.clientX / w) - 0.5
+      const ny = (e.clientY / h) - 0.5
+      hero.style.transform = `perspective(1000px) rotateX(${ny * -4}deg) rotateY(${nx * 4}deg) translate3d(${nx * 20}px, ${ny * 20}px, 0)`
+    }
+
+    const handleMouseLeave = () => {
+      hero.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0px, 0px, 0px)'
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    hero.addEventListener('mouseleave', handleMouseLeave)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      hero.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [])
+
   return (
     <div className="flex flex-col noise">
+      {/* Goofy microscopic easter egg dot in upper corner linking to portfolio */}
+      <a href="https://prajwal-56.github.io" target="_blank" rel="noopener noreferrer" className="fixed top-2 right-2 w-1 h-1 bg-[#C8FF00] rounded-full opacity-20 hover:opacity-100 transition-opacity z-[9999] cursor-help" title="dev core link" />
 
       {/* ── WARP SPEED BG ── */}
       <InteractiveWarp />
@@ -71,7 +105,11 @@ export default function HomePage() {
         <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, rgba(255,45,120,0.06) 0%, transparent 70%)', animation: 'glow-pulse 5s ease-in-out infinite 1.5s' }} />
 
-        <div className={`relative z-10 text-center px-4 max-w-7xl mx-auto w-full transition-all duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+          ref={heroRef}
+          className={`relative z-10 text-center px-4 max-w-7xl mx-auto w-full transition-all duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}
+          style={{ transitionProperty: 'opacity, transform', transitionDuration: '700ms, 300ms', transformStyle: 'preserve-3d' }}
+        >
 
           {/* Eyebrow */}
           <div className="animate-fade-up mb-8" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
@@ -93,13 +131,22 @@ export default function HomePage() {
                 />
               )}
             </div>
-            <div className="block mt-1">
+            <div className="block mt-1 flex justify-center items-baseline">
               {ready && (
-                <ScrollScatterText
-                  text="OVERFLOW"
-                  triggerSelector="#hero-section"
-                  className="block text-[14vw] md:text-[12vw] font-black glow-neon select-none text-neon tracking-[-0.08em] uppercase"
-                />
+                <>
+                  <ScrollScatterText
+                    text="OVERFLO"
+                    triggerSelector="#hero-section"
+                    className="block text-[14vw] md:text-[12vw] font-black glow-neon select-none text-neon tracking-[-0.08em] uppercase"
+                  />
+                  {/* Tilted, sagged W that looks like it fell due to overflow */}
+                  <span
+                    className="inline-block origin-top-left rotate-[34deg] translate-y-[2.8vw] -translate-x-[1.8vw] text-neon glow-neon font-black text-[14vw] md:text-[12vw] select-none tracking-[-0.08em] uppercase animate-float"
+                    style={{ animationDuration: '3.5s' }}
+                  >
+                    W
+                  </span>
+                </>
               )}
             </div>
           </div>
@@ -107,10 +154,11 @@ export default function HomePage() {
           {/* Tagline */}
           <p className="animate-fade-up font-mono text-sm md:text-base text-gray-500 mb-14 tracking-[0.15em] uppercase"
             style={{ animationDelay: '0.8s', animationFillMode: 'backwards' }}>
-            &gt;_ stay curious. break. tinker.{' '}
-            <a href="https://www.instagram.com/tinkerhub.aset" className="text-[#C8FF00] hover:text-white transition-colors" style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '4px' }}>
-              learn.
+            &gt;_ stay curious. break.{' '}
+            <a href="https://instagram.com/tinkerhub.aset" target="_blank" rel="noopener noreferrer" className="text-[#C8FF00] hover:underline underline-offset-4 decoration-dotted">
+              tinker
             </a>
+            . learn.
           </p>
 
           {/* CTA Buttons */}
@@ -196,7 +244,9 @@ export default function HomePage() {
                 <div className="w-[110%] h-[110%] rounded-2xl border opacity-20 animate-spin-slow"
                   style={{ borderColor: '#C8FF00', transformOrigin: 'center', position: 'absolute' }} />
               </div>
-              <div className="relative rounded-2xl overflow-hidden"
+              <div className="relative rounded-2xl overflow-hidden cursor-help"
+                onDoubleClick={() => window.open('https://prajwal-56.github.io', '_blank')}
+                title="Double click for developer credits"
                 style={{ border: '1px solid rgba(200,255,0,0.15)', boxShadow: '0 0 60px rgba(200,255,0,0.08)' }}>
                 <Image
                   src="/richard_feynnman.jpg"

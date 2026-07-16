@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import SmoothScroller from '@/components/SmoothScroller'
 import CustomCursor from '@/components/CustomCursor'
-import Viewport3DTilt from '@/components/Viewport3DTilt'
+import CursorSparks from '@/components/CursorSparks'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,11 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroller>
           {/* Custom cursor — renders nothing on touch devices */}
           <CustomCursor />
-          <Viewport3DTilt>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </Viewport3DTilt>
+          <CursorSparks />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </SmoothScroller>
       </body>
     </html>

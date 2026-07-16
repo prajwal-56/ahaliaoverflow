@@ -29,11 +29,22 @@ export default function DashboardPage() {
     supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
         setUser(data.user)
-        const { data: prof } = await supabase.from('users').select('*').eq('id', data.user.id).single()
-        setProfile(prof)
-        const regs = await getMyRegistrations()
-        setRegistrations(Array.isArray(regs) ? regs : [])
+        try {
+          const { data: prof } = await supabase.from('users').select('*').eq('id', data.user.id).single()
+          setProfile(prof)
+        } catch (err) {
+          console.error("Failed to load user profile:", err)
+        }
+        try {
+          const regs = await getMyRegistrations()
+          setRegistrations(Array.isArray(regs) ? regs : [])
+        } catch (err) {
+          console.error("Failed to load registrations:", err)
+          setRegistrations([])
+        }
       }
+      setLoading(false)
+    }).catch(() => {
       setLoading(false)
     })
   }, [])
@@ -168,6 +179,17 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Low-key organizer callout */}
+      <div className="mt-20 border-t border-dashed py-8 text-center" style={{ borderColor: 'rgba(200,255,0,0.1)' }}>
+        <p className="font-mono text-xs text-gray-500 uppercase tracking-widest">
+          Are you an organizer? Want to host your own events?{' '}
+          <a href="mailto:prawmathean@proton.me" className="text-[#C8FF00] hover:underline transition-all">
+            Contact Developer (prawmathean@proton.me)
+          </a>{' '}
+          to request organizer access.
+        </p>
       </div>
     </div>
   )
