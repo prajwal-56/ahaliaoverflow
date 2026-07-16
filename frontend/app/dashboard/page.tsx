@@ -186,7 +186,7 @@ export default function DashboardPage() {
         <p className="font-mono text-xs text-gray-500 uppercase tracking-widest">
           Are you an organizer? Want to host your own events?{' '}
           <a href="mailto:prawmathean@proton.me" className="text-[#C8FF00] hover:underline transition-all">
-            Contact Developer (prawmathean@proton.me)
+            Contact <a href="https://prajwal-56.github.io/contact"> Developer </a> (prawmathean@proton.me)
           </a>{' '}
           to request organizer access.
         </p>

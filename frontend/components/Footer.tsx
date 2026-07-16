@@ -64,7 +64,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         {/* Brand column */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           <div className="text-xl font-bold uppercase tracking-widest text-white">
             <span className="text-[#C8FF00] animate-pulse">⚡</span> AHALIA <span className="text-[#C8FF00]">OVERFLOW</span>
           </div>
@@ -91,7 +91,7 @@ export default function Footer() {
         </div>
 
         {/* Links */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="lg:col-span-2 space-y-4">
           <h3 className="text-[10px] uppercase tracking-[0.25em] text-white opacity-70">Navigation</h3>
           <ul className="space-y-3 text-xs uppercase">
             {['Home', 'Events', 'Dashboard', 'Log In'].map((n) => {
@@ -104,6 +104,23 @@ export default function Footer() {
                 </li>
               )
             })}
+          </ul>
+        </div>
+
+        {/* Developer Column */}
+        <div className="lg:col-span-2 space-y-4">
+          <h3 className="text-[10px] uppercase tracking-[0.25em] text-white opacity-70">Developer</h3>
+          <ul className="space-y-3 text-xs uppercase">
+            <li>
+              <a href="https://prajwal-56.github.io" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors flex items-center gap-2">
+                <span className="text-[#C8FF00]">▸</span> Developer
+              </a>
+            </li>
+            <li>
+              <a href="https://prajwal-56.github.io/donate" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors flex items-center gap-2">
+                <span className="text-[#C8FF00]">▸</span> Donate
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -154,7 +171,7 @@ export default function Footer() {
 
       <div className="mt-16 pt-8 border-t text-center text-[10px] uppercase tracking-wider"
         style={{ borderColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }}>
-        © {new Date().getFullYear()} Ahalia Overflow. Built with curiosity.
+        © {new Date().getFullYear()} KBA Ahalia Chapter | Ahalia Overflow
       </div>
     </footer>
   )
