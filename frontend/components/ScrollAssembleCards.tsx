@@ -19,42 +19,54 @@ export default function ScrollAssembleCards({ children }: { children: React.Reac
 
     const ctx = gsap.context(() => {
       Array.from(cards).forEach((card, index) => {
-        // Assemble on enter
-        gsap.fromTo(
+        // Use a single timeline to prevent conflicts over the same CSS properties
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 95%',
+            end: 'bottom 10%',
+            scrub: true,
+          },
+        })
+
+        // Step 1: Fly-in entry
+        tl.fromTo(
           card,
           {
             opacity: 0,
-            scale: 0.75,
-            y: 120,
-            rotation: index % 2 === 0 ? -6 : 6,
+            scale: 0.5,
+            y: 220,
+            z: -300,
+            rotationX: 45,
+            rotationY: index % 2 === 0 ? -15 : 15,
+            rotationZ: index % 2 === 0 ? -8 : 8,
           },
           {
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 92%',
-              end: 'top 62%',
-              scrub: true,
-            },
             opacity: 1,
             scale: 1,
             y: 0,
-            rotation: 0,
+            z: 0,
+            rotationX: 0,
+            rotationY: 0,
+            rotationZ: 0,
+            duration: 0.3,
             ease: 'power2.out',
           }
         )
-
-        // Scatter/Disperse on exit (scroll past)
-        gsap.to(card, {
-          scrollTrigger: {
-            trigger: card,
-            start: 'bottom 35%',
-            end: 'bottom top',
-            scrub: true,
-          },
+        // Step 2: Settle / Hold normal state in middle
+        .to(card, {
+          duration: 0.4,
+        })
+        // Step 3: Disperse entry
+        .to(card, {
           opacity: 0,
-          scale: 0.8,
-          y: -120,
-          rotation: index % 2 === 0 ? 6 : -6,
+          scale: 0.5,
+          y: -220,
+          z: 300,
+          rotationX: -45,
+          rotationY: index % 2 === 0 ? 15 : -15,
+          rotationZ: index % 2 === 0 ? 8 : -8,
+          duration: 0.3,
           ease: 'power2.in',
         })
       })
@@ -64,7 +76,11 @@ export default function ScrollAssembleCards({ children }: { children: React.Reac
   }, [])
 
   return (
-    <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div
+      ref={containerRef}
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+      style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
+    >
       {children}
     </div>
   )
